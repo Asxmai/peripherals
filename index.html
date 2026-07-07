@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>嵌入式外设技术手册 | Embedded Peripherals Guide</title>
+<style>
+@font-face { font-family: 'WorkSans'; src: url('./peripherals/P1_USART/_shared/fonts/WorkSans-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'WorkSans'; src: url('./peripherals/P1_USART/_shared/fonts/WorkSans-Bold.ttf') format('truetype'); font-weight: 700; }
+@font-face { font-family: 'JetBrainsMono'; src: url('./peripherals/P1_USART/_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; }
+
+/* ========== 浅色主题（默认） ========== */
+:root {
+  --bg: #f8fafc;
+  --bg2: #f1f5f9;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --rule: #e2e8f0;
+  --accent: #2563eb;
+  --accent2: #0891b2;
+  --accent-light: rgba(37, 99, 235, 0.08);
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --gradient: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
+  --code-bg: #f1f5f9;
+  --tag-bg: #e0f2fe;
+  --tag-color: #0369a1;
+}
+
+/* ========== 深色主题 ========== */
+html.dark {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --rule: #334155;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --accent-light: rgba(59, 130, 246, 0.12);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.2);
+  --code-bg: #0f172a;
+  --tag-bg: rgba(59, 130, 246, 0.15);
+  --tag-color: #60a5fa;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'WorkSans', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--bg);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ========== 主题切换按钮 ========== */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: rotate(15deg) scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+html.dark .theme-toggle .icon-sun { display: inline; }
+html.dark .theme-toggle .icon-moon { display: none; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: inline; }
+
+/* ========== Header ========== */
+.header {
+  text-align: center;
+  padding: 4rem 0 3rem;
+  position: relative;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: var(--gradient);
+  border-radius: 2px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--gradient);
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.25);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+
+.header .subtitle {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ========== Stats ========== */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s;
+}
+
+.stat-item:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon { font-size: 1.2rem; }
+
+.stat-value {
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrainsMono', monospace;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ========== Social Links ========== */
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: all 0.3s;
+}
+
+.social-link:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+}
+
+/* ========== 分类区域 ========== */
+.category-section {
+  margin-bottom: 3rem;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--rule);
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.category-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.category-count {
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: var(--tag-bg);
+  color: var(--tag-color);
+  padding: 0.15rem 0.6rem;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+/* ========== Peripheral Grid ========== */
+.peripheral-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.peripheral-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: block;
+}
+
+.peripheral-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.peripheral-card:hover {
+  background: var(--surface-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.peripheral-card:hover::before {
+  transform: scaleX(1);
+}
+
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.card-arrow {
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  font-size: 1.1rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.3s;
+}
+
+.peripheral-card:hover .card-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ========== 搜索框 ========== */
+.search-container {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.9rem 2.8rem 0.9rem 2.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-shadow: var(--shadow);
+  transition: all 0.3s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-md);
+}
+
+.search-box input::placeholder {
+  color: var(--muted);
+}
+
+.search-clear {
+  position: absolute;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: var(--rule);
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.search-clear:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.search-clear.visible {
+  display: flex;
+}
+
+.search-stats {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+/* 搜索结果高亮 */
+.peripheral-card.highlight {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 2px var(--warning), var(--shadow-md);
+  opacity: 1 !important;
+}
+
+.peripheral-card.dimmed {
+  opacity: 0.25;
+}
+
+.category-section.search-hidden {
+  display: none;
+}
+
+/* ========== 筛选按钮 ========== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.filter-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 99px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .header h1 { font-size: 2rem; }
+  .stats { gap: 0.75rem; }
+  .stat-item { padding: 0.5rem 1rem; font-size: 0.9rem; }
+  .peripheral-grid { grid-template-columns: 1fr; }
+  .theme-toggle { top: 1rem; right: 1rem; width: 40px; height: 40px; font-size: 1.1rem; }
+}
+
+/* ========== Animation ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.category-section {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.category-section:nth-child(1) { animation-delay: 0.05s; }
+.category-section:nth-child(2) { animation-delay: 0.1s; }
+.category-section:nth-child(3) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- 主题切换按钮 -->
+<button class="theme-toggle" id="themeToggle" title="切换深色/浅色主题">
+  <span class="icon-moon">🌙</span>
+  <span class="icon-sun">☀️</span>
+</button>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="avatar">🔌</div>
+    <h1>嵌入式外设技术手册</h1>
+    <p class="subtitle">Embedded Peripherals Technical Guide</p>
+    
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-icon">📅</span>
+        <span class="stat-value" id="running-days">0</span>
+        <span class="stat-label">运行天数</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">👁️</span>
+        <span class="stat-value" id="visitor-count">0</span>
+        <span class="stat-label">访问次数</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">📚</span>
+        <span class="stat-value">167</span>
+        <span class="stat-label">外设总数</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">📂</span>
+        <span class="stat-value">14</span>
+        <span class="stat-label">外设分类</span>
+      </div>
+    </div>
+    
+    <!-- Social Links -->
+    <div class="social-links">
+      <a href="https://github.com/your-username" target="_blank" class="social-link">
+        <span>🐙</span>
+        <span>GitHub</span>
+      </a>
+      <a href="mailto:your-email@example.com" class="social-link">
+        <span>📧</span>
+        <span>联系我</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 搜索框 -->
+  <div class="search-container">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="搜索外设名称、缩写或描述... (如: UART, SPI, 定时器)"
+        autocomplete="off"
+      >
+      <button class="search-clear" id="searchClear" title="清除搜索">×</button>
+    </div>
+    <div class="search-stats" id="searchStats"></div>
+  </div>
+
+  <!-- 筛选栏 -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-category="all">全部</button>
+    <button class="filter-btn" data-category="通信接口">通信接口</button>
+    <button class="filter-btn" data-category="定时器/计数器">定时器/计数器</button>
+    <button class="filter-btn" data-category="模拟外设">模拟外设</button>
+    <button class="filter-btn" data-category="中断与DMA">中断与DMA</button>
+    <button class="filter-btn" data-category="存储接口">存储接口</button>
+    <button class="filter-btn" data-category="时钟与复位">时钟与复位</button>
+    <button class="filter-btn" data-category="电源管理">电源管理</button>
+    <button class="filter-btn" data-category="安全与加密">安全与加密</button>
+    <button class="filter-btn" data-category="显示与摄像头">显示与摄像头</button>
+    <button class="filter-btn" data-category="调试与测试">调试与测试</button>
+    <button class="filter-btn" data-category="人机交互">人机交互</button>
+    <button class="filter-btn" data-category="射频与无线">射频与无线</button>
+    <button class="filter-btn" data-category="电机控制与位置">电机控制与位置</button>
+    <button class="filter-btn" data-category="工业以太网">工业以太网</button>
+    <button class="filter-btn" data-category="其他">其他</button>
+  </div>
+
+  <!-- 外设分类区域 -->
+  <main id="categoriesContainer">
+
+    <!-- ==================== 通信接口 ==================== -->
+    <section class="category-section" data-category="通信接口">
+      <div class="category-header">
+        <div class="category-icon">📡</div>
+        <h2 class="category-title">通信接口</h2>
+        <span class="category-count">51 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <!-- USART -->
+        <a href="./peripherals/P1_USART/usart-guide.html" class="peripheral-card">
+          <div class="card-icon">📡</div>
+          <h3 class="card-title">USART</h3>
+          <p class="card-subtitle">通用同步/异步收发器 · 1970s</p>
+          <p class="card-desc">在UART基础上增加同步时钟模式，可作SPI主设备。支持ISO 7816智能卡、IrDA、LIN等协议模式。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- I2C -->
+        <a href="./peripherals/P2_I2C/i2c-complete-guide.html" class="peripheral-card">
+          <div class="card-icon">🔗</div>
+          <h3 class="card-title">I2C</h3>
+          <p class="card-subtitle">集成电路间总线 · 1982</p>
+          <p class="card-desc">半双工同步串行总线，SDA/SCL两线，多主多从寻址(7/10位)。标准100kHz，快速400kHz，高速3.4MHz。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- SPI -->
+        <a href="./peripherals/P3_SPI/spi-technical-reference.html" class="peripheral-card">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">SPI</h3>
+          <p class="card-subtitle">串行外设接口 · 1979</p>
+          <p class="card-desc">高速全双工同步串行总线，主从架构，SCK/MOSI/MISO/CS四线。CPOL/CPHA四种模式，速率可达数十MHz。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- I3C -->
+        <a href="./peripherals/P4_I3C/i3c-technical-reference.html" class="peripheral-card">
+          <div class="card-icon">🚀</div>
+          <h3 class="card-title">I3C</h3>
+          <p class="card-subtitle">改进型集成电路间总线 · 2018</p>
+          <p class="card-desc">MIPI定义的I2C下一代标准。速率12.5MHz+，支持带内中断(IBI)、动态地址分配、HDR模式。向下兼容I2C设备。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- CAN -->
+        <a href="./peripherals/P5_CAN/can-bus-guide.html" class="peripheral-card">
+          <div class="card-icon">🚗</div>
+          <h3 class="card-title">CAN 2.0</h3>
+          <p class="card-subtitle">控制器局域网 · 1991</p>
+          <p class="card-desc">差分信号多主通信，消息仲裁机制，抗干扰强。CAN 2.0A(11位ID)/2.0B(29位ID)，速率1Mbps。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- Ethernet MAC -->
+        <a href="./peripherals/P7_Ethernet_MAC/ethernet-mac-guide.html" class="peripheral-card">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-title">Ethernet MAC</h3>
+          <p class="card-subtitle">以太网MAC · 1983</p>
+          <p class="card-desc">IEEE 802.3以太网控制器，10/100Mbps(RMII/MII)。需外接PHY。支持TCP/IP协议栈。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- RS485 -->
+        <a href="./peripherals/P8_RS485/rs485-guide.html" class="peripheral-card">
+          <div class="card-icon">🏭</div>
+          <h3 class="card-title">RS-485</h3>
+          <p class="card-subtitle">差分通信 · 1983</p>
+          <p class="card-desc">差分信号长距离通信物理层，支持多点(32/128/256节点)，距离可达1200m。常配合UART使用。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- QSPI -->
+        <a href="./peripherals/P9_QSPI/qspi-technical-guide.html" class="peripheral-card">
+          <div class="card-icon">💾</div>
+          <h3 class="card-title">QSPI</h3>
+          <p class="card-subtitle">四线串行外设接口 · 2010s</p>
+          <p class="card-desc">扩展SPI，4位数据线并行传输，支持XIP(就地执行)。速率可达数百MHz。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <!-- 以下为未完成的文档卡片（无链接，灰色显示） -->
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📮</div>
+          <h3 class="card-title">UART</h3>
+          <p class="card-subtitle">通用异步收发器 · 1960s</p>
+          <p class="card-desc">全双工异步串行通信，TX/RX两根线，可配置波特率。最基础的点对点串行通信外设。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🚌</div>
+          <h3 class="card-title">CAN FD</h3>
+          <p class="card-subtitle">灵活数据速率CAN · 2012</p>
+          <p class="card-desc">CAN的增强版本，数据段速率可达8Mbps，有效载荷最大64字节。兼容CAN 2.0网络。</p>
+        </div>
+
+        <a href="./peripherals/P6_USB/usb-embedded-guide.html" class="peripheral-card">
+          <div class="card-icon">🔌</div>
+          <h3 class="card-title">USB</h3>
+          <p class="card-subtitle">USB设备/主机/OTG · 1996</p>
+          <p class="card-desc">通用串行总线，Full Speed(12Mbps)/High Speed(480Mbps)。支持Device/Host/OTG模式。</p>
+          <span class="card-arrow">→</span>
+        </a>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔗</div>
+          <h3 class="card-title">OSPI</h3>
+          <p class="card-subtitle">八线SPI · 2017</p>
+          <p class="card-desc">8位数据线并行传输，速率可达数百MHz甚至GHz级。支持DDR模式，带宽是QSPI的两倍。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">💿</div>
+          <h3 class="card-title">SDIO/SDMMC</h3>
+          <p class="card-subtitle">SD卡/SDIO接口 · 2000</p>
+          <p class="card-desc">安全数字接口，支持SD/MMC/eMMC存储卡和SDIO外设(WiFi等)。4位总线，50MHz。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎵</div>
+          <h3 class="card-title">I2S</h3>
+          <p class="card-subtitle">集成电路间声音 · 1990s</p>
+          <p class="card-desc">专用音频串行总线，3线(SCK/SD/WS)或4线(+MCLK)。标准飞利浦格式，支持主/从模式。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎶</div>
+          <h3 class="card-title">SAI</h3>
+          <p class="card-subtitle">串行音频接口 · 2012</p>
+          <p class="card-desc">高灵活度音频串行接口，支持I2S/左对齐/右对齐/TDM多通道等多种协议。独立时钟和帧同步。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🚙</div>
+          <h3 class="card-title">LIN</h3>
+          <p class="card-subtitle">本地互联网络 · 1999</p>
+          <p class="card-desc">低成本单线串行总线，主从架构，速率最高20kbps。用于低速子网络。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📱</div>
+          <h3 class="card-title">IrDA</h3>
+          <p class="card-subtitle">红外通信 · 1993</p>
+          <p class="card-desc">红外串行通信，IrDA SIR标准，通过红外LED实现短距离无线数据传输。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎧</div>
+          <h3 class="card-title">SPDIF</h3>
+          <p class="card-subtitle">S/PDIF接收/发送 · 1987</p>
+          <p class="card-desc">索尼/飞利浦数字音频接口标准，支持光纤或同轴传输。采样率最高192kHz。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">MDIO/SMI</h3>
+          <p class="card-subtitle">管理数据输入输出 · 1983</p>
+          <p class="card-desc">IEEE 802.3定义的PHY管理总线(MDC/MDIO两线)，用于读写以太网PHY寄存器。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">💳</div>
+          <h3 class="card-title">ISO 7816</h3>
+          <p class="card-subtitle">智能卡接口 · 1987</p>
+          <p class="card-desc">符合ISO 7816-3标准的智能卡通信接口，支持半双工、字符协议T=0和T=1。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔋</div>
+          <h3 class="card-title">SMBus</h3>
+          <p class="card-subtitle">系统管理总线 · 1995</p>
+          <p class="card-desc">基于I2C的简化协议，用于系统管理通信。定义标准命令和消息格式。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🌡️</div>
+          <h3 class="card-title">1-Wire</h3>
+          <p class="card-subtitle">单线总线 · 1990s</p>
+          <p class="card-desc">Dallas/Maxim单线协议，仅一根数据线+地线。每个设备有唯一64位ID。速率约16kbps。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">DFSDM</h3>
+          <p class="card-subtitle">数字滤波器Σ-Δ调制器 · 2017</p>
+          <p class="card-desc">片内数字滤波器，直接连接外部Σ-Δ调制器。支持FIR/IIR滤波、过采样、多通道级联。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎤</div>
+          <h3 class="card-title">PDM</h3>
+          <p class="card-subtitle">脉冲密度调制输入 · 2010s</p>
+          <p class="card-desc">PDM数字麦克风专用接口，1位高速数据流，片内转换为PCM数据。支持立体声双通道。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🖥️</div>
+          <h3 class="card-title">LVDS</h3>
+          <p class="card-subtitle">差分信号显示接口 · 1994</p>
+          <p class="card-desc">低电压差分信号，高速低EMI。用于大尺寸TFT LCD屏驱动、高速数据采集板间通信。</p>
+        </div>
+
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📐</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">SSI / BiSS / HART / IO-Link / PMBus / AS-i / SENT / DALI / DMX512 / FlexRay / MOST / PSI5 / DSI3 / CAN XL / SPMI / CEC / EnDat / Tamagawa / LPUART / LPSPI / LPI2C / FlexIO / SGPIO / M-LVDS / Wiegand / PSSI</p>
+          <p class="card-desc">通信接口分类下还有25种以上外设协议，涵盖工业、汽车、音频、安防等领域。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 定时器/计数器 ==================== -->
+    <section class="category-section" data-category="定时器/计数器">
+      <div class="category-header">
+        <div class="category-icon">⏱️</div>
+        <h2 class="category-title">定时器/计数器</h2>
+        <span class="category-count">12 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⏱️</div>
+          <h3 class="card-title">TIM 通用定时器</h3>
+          <p class="card-subtitle">通用定时器 · 1990s</p>
+          <p class="card-desc">多功能16/32位定时器，支持输入捕获、输出比较、PWM、编码器接口、单脉冲。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🕐</div>
+          <h3 class="card-title">SysTick</h3>
+          <p class="card-subtitle">系统定时器 · 2004</p>
+          <p class="card-desc">Cortex-M内核24位递减计数器，与主频同步。常用于RTOS时基。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📆</div>
+          <h3 class="card-title">RTC</h3>
+          <p class="card-subtitle">实时时钟 · 1990s</p>
+          <p class="card-desc">独立域低功耗时钟，LSE(32.768kHz)驱动。日历、闹钟、周期唤醒。VBAT备份。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🐕</div>
+          <h3 class="card-title">IWDG</h3>
+          <p class="card-subtitle">独立看门狗 · 1990s</p>
+          <p class="card-desc">独立硬件看门狗，LSI时钟驱动。超时未喂狗触发系统复位。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚙️</div>
+          <h3 class="card-title">Advanced TIM</h3>
+          <p class="card-subtitle">高级定时器 · 2007</p>
+          <p class="card-desc">在通用定时器基础上增加互补输出、死区控制、刹车功能。专用于电机控制。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔁</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">Basic TIM / LPTIM / WWDG / HRTIM / FTM / CMT / STU/TMU</p>
+          <p class="card-desc">包括基本定时器、低功耗定时器、窗口看门狗、高分辨率定时器(HRTIM)等7种定时器外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 模拟外设 ==================== -->
+    <section class="category-section" data-category="模拟外设">
+      <div class="category-header">
+        <div class="category-icon">📊</div>
+        <h2 class="category-title">模拟外设</h2>
+        <span class="category-count">14 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📊</div>
+          <h3 class="card-title">ADC</h3>
+          <p class="card-subtitle">模数转换器 · 1990s</p>
+          <p class="card-desc">模拟电压转数字值。单端/差分、多通道扫描、注入通道、硬件过采样。12/16位，数MSPS。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📈</div>
+          <h3 class="card-title">DAC</h3>
+          <p class="card-subtitle">数模转换器 · 1990s</p>
+          <p class="card-desc">数字值转模拟电压。多通道、波形生成、DMA。12位，微秒级建立时间。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚖️</div>
+          <h3 class="card-title">COMP</h3>
+          <p class="card-subtitle">模拟比较器 · 1990s</p>
+          <p class="card-desc">比较两路模拟电压大小，输出数字结果。可编程迟滞、低功耗。百纳秒响应。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔊</div>
+          <h3 class="card-title">OPAMP</h3>
+          <p class="card-subtitle">运算放大器 · 2010s</p>
+          <p class="card-desc">片内集成运放，可配置增益。输入输出映射到GPIO。减少外部器件。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🌡️</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">TS_CAL / Bandgap / Analog MUX / S&H / Current Source / PGA / VREFBUF / Σ-Δ / Charger / EMC Filter</p>
+          <p class="card-desc">还包括温度传感器、带隙基准、模拟多路复用器、采样保持电路、可编程电流源等10种模拟外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 中断与DMA ==================== -->
+    <section class="category-section" data-category="中断与DMA">
+      <div class="category-header">
+        <div class="category-icon">🔔</div>
+        <h2 class="category-title">中断与DMA</h2>
+        <span class="category-count">5 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔔</div>
+          <h3 class="card-title">NVIC</h3>
+          <p class="card-subtitle">嵌套向量中断控制器 · 2004</p>
+          <p class="card-desc">Cortex-M内核中断管理器，可配置优先级(抢占+子优先级)、尾链机制。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">EXTI</h3>
+          <p class="card-subtitle">外部中断/事件控制器 · 2007</p>
+          <p class="card-desc">监测GPIO边沿(上升/下降/双边沿)，触发中断或事件。支持滤波、软件触发。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔄</div>
+          <h3 class="card-title">DMA</h3>
+          <p class="card-subtitle">直接存储器访问 · 1990s</p>
+          <p class="card-desc">外设与内存间高速传输，无需CPU参与。多通道/多流、优先级仲裁、循环模式。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔀</div>
+          <h3 class="card-title">DMAMUX</h3>
+          <p class="card-subtitle">DMA复用器 · 2017</p>
+          <p class="card-desc">DMA请求源灵活映射到任意DMA通道，突破固定映射限制。支持同步/外部触发。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🧠</div>
+          <h3 class="card-title">SmartDMA/MDMA</h3>
+          <p class="card-subtitle">智能DMA · 2019</p>
+          <p class="card-desc">增强型DMA，支持内存到内存(MDMA)、链表描述符、硬件请求复用、数据预取。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 存储接口 ==================== -->
+    <section class="category-section" data-category="存储接口">
+      <div class="category-header">
+        <div class="category-icon">💾</div>
+        <h2 class="category-title">存储接口</h2>
+        <span class="category-count">7 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">💾</div>
+          <h3 class="card-title">FLASH</h3>
+          <p class="card-subtitle">Flash控制器 · 1990s</p>
+          <p class="card-desc">管理内部Flash读写、擦除、加密、安全区域(ROP)。支持双Bank并行读取。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🗄️</div>
+          <h3 class="card-title">FMC/FSMC</h3>
+          <p class="card-subtitle">灵活存储控制器 · 2007</p>
+          <p class="card-desc">外部SRAM/PSRAM/NOR/NAND/SDRAM并行总线接口。16位数据，地址/数据复用或非复用。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📦</div>
+          <h3 class="card-title">XSPI</h3>
+          <p class="card-subtitle">外部存储器接口 · 2018</p>
+          <p class="card-desc">支持NOR/RAM/PSRAM的串行/并行接口。DDR模式、加密传输。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📝</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">EEPROM Emul / ART / TCM / SDRAM Ctrl</p>
+          <p class="card-desc">还包括EEPROM模拟、Art加速器、紧密耦合存储器(TCM)、SDRAM控制器等4种存储外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 时钟与复位 ==================== -->
+    <section class="category-section" data-category="时钟与复位">
+      <div class="category-header">
+        <div class="category-icon">🕐</div>
+        <h2 class="category-title">时钟与复位</h2>
+        <span class="category-count">9 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🕐</div>
+          <h3 class="card-title">RCC</h3>
+          <p class="card-subtitle">时钟控制单元 · 1990s</p>
+          <p class="card-desc">管理所有时钟源(HSI/HSE/LSI/LSE/PLL)和总线时钟分配。外设时钟使能/复位均通过RCC。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">HSI / HSE</h3>
+          <p class="card-subtitle">内部/外部高速振荡器</p>
+          <p class="card-desc">HSI: 片内RC高速振荡器(16/48/64MHz)。HSE: 外接晶振(4~26MHz)，作为系统主时钟或PLL源。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔄</div>
+          <h3 class="card-title">PLL</h3>
+          <p class="card-subtitle">锁相环 · 1990s</p>
+          <p class="card-desc">将低频时钟倍频到更高频率。主PLL用于系统时钟，专用PLL用于USB(48MHz)/SAI。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">LSI / LSE / CSS / MCO / MSI</p>
+          <p class="card-desc">还包括内部/外部低速振荡器、时钟安全系统、时钟输出、内部多速振荡器等6种时钟外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 电源管理 ==================== -->
+    <section class="category-section" data-category="电源管理">
+      <div class="category-header">
+        <div class="category-icon">🔋</div>
+        <h2 class="category-title">电源管理</h2>
+        <span class="category-count">6 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔋</div>
+          <h3 class="card-title">PWR/PMU</h3>
+          <p class="card-subtitle">电源管理单元 · 1990s</p>
+          <p class="card-desc">管理低功耗模式(Sleep/Stop/Standby/Shutdown)。控制电压调节器、备份域、唤醒源。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">PVD</h3>
+          <p class="card-subtitle">可编程电压监测 · 1990s</p>
+          <p class="card-desc">监测VDD与可编程阈值比较。低于阈值触发中断或复位。多级阈值。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔌</div>
+          <h3 class="card-title">BOR</h3>
+          <p class="card-subtitle">欠压复位 · 1990s</p>
+          <p class="card-desc">当VDD低于固定阈值时自动硬件复位。防止低电压下程序异常运行。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">OTP/FUSE / BKP/BBR / VBAT Domain</p>
+          <p class="card-desc">还包括熔丝位/选项字节、备份寄存器、电池备份域等3种电源管理外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 安全与加密 ==================== -->
+    <section class="category-section" data-category="安全与加密">
+      <div class="category-header">
+        <div class="category-icon">🔒</div>
+        <h2 class="category-title">安全与加密</h2>
+        <span class="category-count">12 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔒</div>
+          <h3 class="card-title">CRC</h3>
+          <p class="card-subtitle">CRC计算单元 · 2000s</p>
+          <p class="card-desc">硬件CRC校验，支持多种多项式(CRC32等)。快速数据校验。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎲</div>
+          <h3 class="card-title">RNG</h3>
+          <p class="card-subtitle">真随机数发生器 · 2000s</p>
+          <p class="card-desc">基于模拟噪声源的真随机数。通过AHB接口读取。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔐</div>
+          <h3 class="card-title">CRYP/AES</h3>
+          <p class="card-subtitle">加密加速器 · 2012</p>
+          <p class="card-desc">硬件加密引擎，DES/TDES/AES(ECB/CBC/CTR/GCM)。高速加解密。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🛡️</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">HASH / Secure Boot / MPU / OTP / TrustZone / TAMP / PUF / HSM / Fault Injection</p>
+          <p class="card-desc">还包括哈希处理器、安全启动、内存保护单元、TrustZone、物理不可克隆函数(PUF)等9种安全外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 显示与摄像头 ==================== -->
+    <section class="category-section" data-category="显示与摄像头">
+      <div class="category-header">
+        <div class="category-icon">🖥️</div>
+        <h2 class="category-title">显示与摄像头</h2>
+        <span class="category-count">10 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🖥️</div>
+          <h3 class="card-title">LTDC</h3>
+          <p class="card-subtitle">LCD-TFT控制器 · 2012</p>
+          <p class="card-desc">TFT显示控制器，RGB接口。多层叠加、Alpha混合、色深转换、抖动。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📷</div>
+          <h3 class="card-title">DCMI/DVP</h3>
+          <p class="card-subtitle">数字摄像头接口 · 2010</p>
+          <p class="card-desc">并行数字摄像头接口，8/10/12/14位数据总线。支持同步码、硬件JPEG解码。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎨</div>
+          <h3 class="card-title">DMA2D</h3>
+          <p class="card-subtitle">图形加速器 · 2012</p>
+          <p class="card-desc">2D图形加速引擎，颜色转换、Alpha混合、缩放/旋转。DMA操作帧缓存。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📱</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">MIPI DSI / MIPI CSI-2 / LCD Driver / DPI / Intel 8080 / ePaper IF / DCIC</p>
+          <p class="card-desc">还包括MIPI DSI主机、MIPI CSI-2摄像头、段式LCD驱动、并行RGB/DPI、电子纸接口等7种显示外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 调试与测试 ==================== -->
+    <section class="category-section" data-category="调试与测试">
+      <div class="category-header">
+        <div class="category-icon">🔧</div>
+        <h2 class="category-title">调试与测试</h2>
+        <span class="category-count">9 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">SWD</h3>
+          <p class="card-subtitle">串行调试接口 · 2004</p>
+          <p class="card-desc">仅需SWDIO/SWCLK两根线。支持断点、单步、内存读写、Flash下载。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔌</div>
+          <h3 class="card-title">JTAG</h3>
+          <p class="card-subtitle">JTAG调试接口 · 1990</p>
+          <p class="card-desc">IEEE 1149.1标准，5线。支持边界扫描和调试。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📡</div>
+          <h3 class="card-title">SWO/ITM</h3>
+          <p class="card-subtitle">串行跟踪输出 · 2004</p>
+          <p class="card-desc">通过SWO引脚输出调试信息。printf重定向、变量跟踪、时间戳。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔬</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">ETM / ETB / TPIU / Boundary Scan / LBIST / MBIST</p>
+          <p class="card-desc">还包括嵌入式跟踪宏单元、跟踪缓冲器、跟踪端口接口、逻辑/存储内建自测等6种调试外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 人机交互 ==================== -->
+    <section class="category-section" data-category="人机交互">
+      <div class="category-header">
+        <div class="category-icon">👆</div>
+        <h2 class="category-title">人机交互</h2>
+        <span class="category-count">5 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">👆</div>
+          <h3 class="card-title">GPIO</h3>
+          <p class="card-subtitle">通用输入输出 · 1990s</p>
+          <p class="card-desc">可配置数字I/O引脚，支持推挽/开漏/上拉/下拉/模拟/复用功能。GPIO中断。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🖐️</div>
+          <h3 class="card-title">TSC</h3>
+          <p class="card-subtitle">触摸感应控制器 · 2012</p>
+          <p class="card-desc">电容式触摸感应，多通道触摸按键/滑条/转盘。可配置采样/阈值/防抖。低功耗。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">💡</div>
+          <h3 class="card-title">LED Ctrl</h3>
+          <p class="card-subtitle">LED控制器 · 2015</p>
+          <p class="card-desc">专用LED驱动控制器，支持PWM调光、呼吸效果、闪烁模式。硬件自动运行不占CPU。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⌨️</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">KBD Matrix / LCD Boost</p>
+          <p class="card-desc">还包括键盘矩阵接口、LCD升压转换器等2种人机交互外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 射频与无线 ==================== -->
+    <section class="category-section" data-category="射频与无线">
+      <div class="category-header">
+        <div class="category-icon">📶</div>
+        <h2 class="category-title">射频与无线</h2>
+        <span class="category-count">9 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📶</div>
+          <h3 class="card-title">BLE</h3>
+          <p class="card-subtitle">蓝牙低功耗 · 2010</p>
+          <p class="card-desc">集成BLE 4.0+射频基带，主/从/广播角色。低功耗，1~2Mbps。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📡</div>
+          <h3 class="card-title">WiFi</h3>
+          <p class="card-subtitle">WiFi · 2016</p>
+          <p class="card-desc">集成WiFi 2.4GHz(802.11 b/g/n)。STA/AP模式。部分集成TCP/IP卸载。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🏠</div>
+          <h3 class="card-title">Zigbee</h3>
+          <p class="card-subtitle">Zigbee/Thread · 2003</p>
+          <p class="card-desc">IEEE 802.15.4射频，Zigbee/Thread网状网络。低功耗、自组网、多跳。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🌍</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">LoRa / NFC / 802.15.4 / GNSS / LTE-M/NB-IoT / UWB</p>
+          <p class="card-desc">还包括LoRa/Sub-GHz、近场通信(NFC)、全球导航卫星系统(GNSS)、蜂窝基带、超宽带(UWB)等6种射频外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 电机控制与位置 ==================== -->
+    <section class="category-section" data-category="电机控制与位置">
+      <div class="category-header">
+        <div class="category-icon">🔄</div>
+        <h2 class="category-title">电机控制与位置</h2>
+        <span class="category-count">5 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔄</div>
+          <h3 class="card-title">Hall</h3>
+          <p class="card-subtitle">霍尔传感器接口 · 2000s</p>
+          <p class="card-desc">专用霍尔传感器输入接口，3路霍尔信号解码。用于无刷电机换相。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🎯</div>
+          <h3 class="card-title">QEI/QEP</h3>
+          <p class="card-subtitle">正交编码器接口 · 2000s</p>
+          <p class="card-desc">硬件正交编码器解码，A/B相计数+索引脉冲。支持4X计数、速度测量、位置锁存。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">📐</div>
+          <h3 class="card-title">CORDIC</h3>
+          <p class="card-subtitle">CORDIC协处理器 · 2019</p>
+          <p class="card-desc">硬件CORDIC加速器，快速计算sin/cos/atan等三角函数和坐标变换。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">RDC / FMAC</p>
+          <p class="card-desc">还包括旋变数字转换器(RDC)、FMAC数字滤波器等2种电机控制外设。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 工业以太网 ==================== -->
+    <section class="category-section" data-category="工业以太网">
+      <div class="category-header">
+        <div class="category-icon">🏭</div>
+        <h2 class="category-title">工业以太网</h2>
+        <span class="category-count">4 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🏭</div>
+          <h3 class="card-title">EtherCAT ESC</h3>
+          <p class="card-subtitle">EtherCAT从站控制器 · 2003</p>
+          <p class="card-desc">硬件EtherCAT从站控制器，处理EtherCAT帧的收发和分布式时钟。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔗</div>
+          <h3 class="card-title">PROFINET</h3>
+          <p class="card-subtitle">PROFINET控制器 · 2000</p>
+          <p class="card-desc">硬件PROFINET接口控制器，支持IRT(等时实时)和RT(实时)通信。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🌐</div>
+          <h3 class="card-title">EtherNet/IP</h3>
+          <p class="card-subtitle">EtherNet/IP适配器 · 2000</p>
+          <p class="card-desc">基于标准以太网的工业协议硬件支持。CIP协议栈。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🏗️</div>
+          <h3 class="card-title">CC-Link IE TSN</h3>
+          <p class="card-subtitle">CC-Link · 2018</p>
+          <p class="card-desc">基于TSN(时间敏感网络)的工业以太网。三菱主导，亚太区广泛使用。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 其他 ==================== -->
+    <section class="category-section" data-category="其他">
+      <div class="category-header">
+        <div class="category-icon">🔧</div>
+        <h2 class="category-title">其他</h2>
+        <span class="category-count">9 项</span>
+      </div>
+      <div class="peripheral-grid">
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🚀</div>
+          <h3 class="card-title">Bootloader</h3>
+          <p class="card-subtitle">Boot · 1990s</p>
+          <p class="card-desc">芯片出厂内置引导程序。BOOT引脚选择启动区域。支持UART/USB/SPI下载。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🆔</div>
+          <h3 class="card-title">UID</h3>
+          <p class="card-subtitle">唯一设备ID · 2000s</p>
+          <p class="card-desc">出厂烧录96位唯一标识，不可修改。用于设备身份和加密密钥派生。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">⚡</div>
+          <h3 class="card-title">EVENT</h3>
+          <p class="card-subtitle">事件控制器 · 2019</p>
+          <p class="card-desc">外设间硬件事件互联，无需CPU和中断。一个外设事件直接触发另一个外设动作。</p>
+        </div>
+        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+          <div class="card-icon">🔧</div>
+          <h3 class="card-title">更多...</h3>
+          <p class="card-subtitle">PTP / Switch Matrix / DSP / FMAC/CORDIC / GPU / LCD Bias</p>
+          <p class="card-desc">还包括IEEE 1588 PTP、矩阵开关、数字信号处理器(DSP)、图形处理单元(GPU)等6种外设。</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 嵌入式外设技术手册 | 使用 <a href="https://pages.github.com/" target="_blank">GitHub Pages</a> 托管</p>
+    <p style="margin-top: 0.5rem;">本站点始于 <span id="start-date">2026-01-01</span></p>
+  </footer>
+</div>
+
+<script>
+// ========== 主题切换 ==========
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+
+// 读取保存的主题或系统偏好
+function getPreferredTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved) return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    html.classList.add('dark');
+  } else {
+    html.classList.remove('dark');
+  }
+  localStorage.setItem('theme', theme);
+}
+
+// 初始化主题
+applyTheme(getPreferredTheme());
+
+themeToggle.addEventListener('click', () => {
+  const current = html.classList.contains('dark') ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+// 监听系统主题变化
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  if (!localStorage.getItem('theme')) {
+    applyTheme(e.matches ? 'dark' : 'light');
+  }
+});
+
+// ========== 分类筛选 ==========
+const filterBar = document.getElementById('filterBar');
+const categories = document.querySelectorAll('.category-section');
+
+filterBar.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('filter-btn')) return;
+  
+  // 更新按钮状态
+  filterBar.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  e.target.classList.add('active');
+  
+  const category = e.target.dataset.category;
+  
+  categories.forEach(section => {
+    if (category === 'all' || section.dataset.category === category) {
+      section.style.display = '';
+    } else {
+      section.style.display = 'none';
+    }
+  });
+});
+
+// ========== 运行天数 ==========
+function calculateRunningDays() {
+  const startDate = new Date('2026-01-01');
+  const today = new Date();
+  const diffTime = Math.abs(today - startDate);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  document.getElementById('running-days').textContent = diffDays;
+}
+
+// ========== 访问统计 ==========
+function initVisitorCount() {
+  let count = localStorage.getItem('visitor_count') || 0;
+  count = parseInt(count) + 1;
+  localStorage.setItem('visitor_count', count);
+  document.getElementById('visitor-count').textContent = count;
+}
+
+calculateRunningDays();
+initVisitorCount();
+
+// ========== 搜索功能 ==========
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+const searchStats = document.getElementById('searchStats');
+const allCards = document.querySelectorAll('.peripheral-card');
+const allSections = document.querySelectorAll('.category-section');
+
+// 防抖
+let searchTimer = null;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(performSearch, 150);
+  searchClear.classList.toggle('visible', searchInput.value.length > 0);
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchClear.classList.remove('visible');
+  clearSearch();
+  searchInput.focus();
+});
+
+// Enter键：滚动到第一个匹配结果
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const firstMatch = document.querySelector('.peripheral-card.highlight');
+    if (firstMatch) {
+      // 找到对应的分类section并展开（如果被筛选隐藏了）
+      const parentSection = firstMatch.closest('.category-section');
+      if (parentSection && parentSection.classList.contains('search-hidden')) {
+        parentSection.classList.remove('search-hidden');
+      }
+      
+      // 平滑滚动到第一个匹配结果
+      firstMatch.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+      
+      // 添加闪烁效果提示用户
+      firstMatch.style.transition = 'transform 0.3s, box-shadow 0.3s';
+      firstMatch.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        firstMatch.style.transform = '';
+      }, 300);
+    }
+  }
+});
+
+// 快捷键 Ctrl+K / Cmd+K 聚焦搜索框
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  if (e.key === 'Escape' && document.activeElement === searchInput) {
+    searchInput.value = '';
+    searchClear.classList.remove('visible');
+    clearSearch();
+    searchInput.blur();
+  }
+});
+
+function performSearch() {
+  // 统一转小写进行匹配
+  const query = searchInput.value.trim().toLowerCase();
+  
+  if (!query) {
+    clearSearch();
+    return;
+  }
+  
+  let matchCount = 0;
+  let firstMatch = null;
+  
+  // 搜索范围始终为全部，不受分类筛选按钮影响
+  allSections.forEach(section => {
+    // 搜索时显示所有分类
+    section.classList.remove('search-hidden');
+    
+    const cards = section.querySelectorAll('.peripheral-card');
+    let sectionHasMatch = false;
+    
+    cards.forEach(card => {
+      // 获取所有可搜索文本，统一转小写
+      const title = (card.querySelector('.card-title')?.textContent || '').toLowerCase();
+      const subtitle = (card.querySelector('.card-subtitle')?.textContent || '').toLowerCase();
+      const desc = (card.querySelector('.card-desc')?.textContent || '').toLowerCase();
+      const searchText = title + ' ' + subtitle + ' ' + desc;
+      
+      // 大小写不敏感匹配
+      if (searchText.includes(query)) {
+        card.classList.add('highlight');
+        card.classList.remove('dimmed');
+        sectionHasMatch = true;
+        matchCount++;
+        if (!firstMatch) firstMatch = card;
+      } else {
+        card.classList.remove('highlight');
+        card.classList.add('dimmed');
+      }
+    });
+    
+    // 如果该分类完全没有匹配项，则隐藏
+    if (!sectionHasMatch) {
+      section.classList.add('search-hidden');
+    }
+  });
+  
+  searchStats.textContent = matchCount > 0
+    ? `找到 ${matchCount} 个匹配结果，按 Enter 跳转到第一个`
+    : '未找到匹配的外设，试试其他关键词';
+}
+
+function clearSearch() {
+  allCards.forEach(card => {
+    card.classList.remove('highlight', 'dimmed');
+  });
+  allSections.forEach(section => {
+    section.classList.remove('search-hidden');
+  });
+  searchStats.textContent = '';
+}
+</script>
+</body>
+</html>
