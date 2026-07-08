@@ -1507,12 +1507,23 @@ function calculateRunningDays() {
 // 每秒更新一次
 setInterval(calculateRunningDays, 1000);
 
-// ========== 访问统计 ==========
-function initVisitorCount() {
-  let count = localStorage.getItem('visitor_count') || 0;
-  count = parseInt(count) + 1;
-  localStorage.setItem('visitor_count', count);
-  document.getElementById('visitor-count').textContent = count;
+// ========== 访问统计（全站统一） ==========
+async function initVisitorCount() {
+  const countElement = document.getElementById('visitor-count');
+  
+  try {
+    // 使用 countapi.xyz 免费计数服务（全站统一）
+    const response = await fetch('https://api.countapi.xyz/update/peripherals-guide/visitors?by=1');
+    const data = await response.json();
+    countElement.textContent = data.value;
+  } catch (error) {
+    // 如果 API 失败，回退到本地存储
+    console.warn('访问统计服务不可用，使用本地计数');
+    let count = localStorage.getItem('visitor_count') || 0;
+    count = parseInt(count) + 1;
+    localStorage.setItem('visitor_count', count);
+    countElement.textContent = count;
+  }
 }
 
 calculateRunningDays();
