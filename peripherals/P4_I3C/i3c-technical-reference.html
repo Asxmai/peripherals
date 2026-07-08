@@ -1723,7 +1723,7 @@ MIPI 强烈建议所有实现者迁移到 <mark class="key">I3C v1.2 / I3C Basic
 <script src="assets/charts.js"></script>
 <script>
 mermaid.initialize({
-  startOnLoad: true,
+  startOnLoad: false,
   theme: 'base',
   securityLevel: 'loose',
   themeVariables: {
@@ -1751,6 +1751,7 @@ mermaid.initialize({
     fontSize: '13px'
   }
 });
+mermaid.run();
 
 // Theme toggle functionality
 (function() {
