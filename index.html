@@ -528,6 +528,69 @@ html.dark .theme-toggle .icon-moon { display: none; }
 .category-section:nth-child(1) { animation-delay: 0.05s; }
 .category-section:nth-child(2) { animation-delay: 0.1s; }
 .category-section:nth-child(3) { animation-delay: 0.15s; }
+
+/* ========== 联系弹窗 ========== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: fadeInUp 0.25s ease-out;
+}
+.modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--danger); }
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+.modal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.modal-link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+.modal-link-item:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+.modal-link-item .link-icon { font-size: 1.2rem; width: 1.5rem; text-align: center; }
 </style>
 </head>
 <body>
@@ -571,14 +634,14 @@ html.dark .theme-toggle .icon-moon { display: none; }
     
     <!-- Social Links -->
     <div class="social-links">
-      <a href="https://github.com/your-username" target="_blank" class="social-link">
+      <a href="https://github.com/Asxmai/peripherals" target="_blank" class="social-link">
         <span>🐙</span>
         <span>GitHub</span>
       </a>
-      <a href="mailto:your-email@example.com" class="social-link">
+      <button class="social-link" id="contactBtn" style="cursor:pointer;font-family:inherit;">
         <span>📧</span>
-        <span>联系我</span>
-      </a>
+        <span>有问题联系我</span>
+      </button>
     </div>
   </header>
 
@@ -723,47 +786,53 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <span class="card-arrow">→</span>
         </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="peripherals/P10_OSPI/ospi-technical-reference.html" class="peripheral-card">
           <div class="card-icon">🔗</div>
           <h3 class="card-title">OSPI</h3>
           <p class="card-subtitle">八线SPI · 2017</p>
           <p class="card-desc">8位数据线并行传输，速率可达数百MHz甚至GHz级。支持DDR模式，带宽是QSPI的两倍。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="peripherals/P11_SDIO_SDMMC/sdio-sdmmc-guide.html" class="peripheral-card">
           <div class="card-icon">💿</div>
           <h3 class="card-title">SDIO/SDMMC</h3>
           <p class="card-subtitle">SD卡/SDIO接口 · 2000</p>
           <p class="card-desc">安全数字接口，支持SD/MMC/eMMC存储卡和SDIO外设(WiFi等)。4位总线，50MHz。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="peripherals/P12_I2S/i2s-embedded-guide.html" class="peripheral-card">
           <div class="card-icon">🎵</div>
           <h3 class="card-title">I2S</h3>
           <p class="card-subtitle">集成电路间声音 · 1990s</p>
           <p class="card-desc">专用音频串行总线，3线(SCK/SD/WS)或4线(+MCLK)。标准飞利浦格式，支持主/从模式。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P13_SAI/sai-reference-guide.html" class="peripheral-card">
           <div class="card-icon">🎶</div>
           <h3 class="card-title">SAI</h3>
           <p class="card-subtitle">串行音频接口 · 2012</p>
           <p class="card-desc">高灵活度音频串行接口，支持I2S/左对齐/右对齐/TDM多通道等多种协议。独立时钟和帧同步。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P14_LIN/lin-protocol-guide.html" class="peripheral-card">
           <div class="card-icon">🚙</div>
           <h3 class="card-title">LIN</h3>
           <p class="card-subtitle">本地互联网络 · 1999</p>
           <p class="card-desc">低成本单线串行总线，主从架构，速率最高20kbps。用于低速子网络。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P15_IrDA/irda-technical-guide.html" class="peripheral-card">
           <div class="card-icon">📱</div>
           <h3 class="card-title">IrDA</h3>
           <p class="card-subtitle">红外通信 · 1993</p>
           <p class="card-desc">红外串行通信，IrDA SIR标准，通过红外LED实现短距离无线数据传输。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🎧</div>
@@ -838,12 +907,12 @@ html.dark .theme-toggle .icon-moon { display: none; }
         <span class="category-count">12 项</span>
       </div>
       <div class="peripheral-grid">
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P52_TIM/stm32-tim-guide.html" class="peripheral-card">
           <div class="card-icon">⏱️</div>
           <h3 class="card-title">TIM 通用定时器</h3>
           <p class="card-subtitle">通用定时器 · 1990s</p>
           <p class="card-desc">多功能16/32位定时器，支持输入捕获、输出比较、PWM、编码器接口、单脉冲。</p>
-        </div>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🕐</div>
           <h3 class="card-title">SysTick</h3>
@@ -885,18 +954,18 @@ html.dark .theme-toggle .icon-moon { display: none; }
         <span class="category-count">14 项</span>
       </div>
       <div class="peripheral-grid">
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P64_ADC/adc-guide.html" class="peripheral-card">
           <div class="card-icon">📊</div>
           <h3 class="card-title">ADC</h3>
           <p class="card-subtitle">模数转换器 · 1990s</p>
           <p class="card-desc">模拟电压转数字值。单端/差分、多通道扫描、注入通道、硬件过采样。12/16位，数MSPS。</p>
-        </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        </a>
+        <a href="./peripherals/P65_DAC/dac-guide.html" class="peripheral-card">
           <div class="card-icon">📈</div>
           <h3 class="card-title">DAC</h3>
           <p class="card-subtitle">数模转换器 · 1990s</p>
           <p class="card-desc">数字值转模拟电压。多通道、波形生成、DMA。12位，微秒级建立时间。</p>
-        </div>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">⚖️</div>
           <h3 class="card-title">COMP</h3>
@@ -932,12 +1001,12 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <p class="card-subtitle">嵌套向量中断控制器 · 2004</p>
           <p class="card-desc">Cortex-M内核中断管理器，可配置优先级(抢占+子优先级)、尾链机制。</p>
         </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P79_EXTI/exti-guide.html" class="peripheral-card">
           <div class="card-icon">⚡</div>
           <h3 class="card-title">EXTI</h3>
           <p class="card-subtitle">外部中断/事件控制器 · 2007</p>
           <p class="card-desc">监测GPIO边沿(上升/下降/双边沿)，触发中断或事件。支持滤波、软件触发。</p>
-        </div>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🔄</div>
           <h3 class="card-title">DMA</h3>
@@ -1177,12 +1246,12 @@ html.dark .theme-toggle .icon-moon { display: none; }
         <span class="category-count">5 项</span>
       </div>
       <div class="peripheral-grid">
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P136_GPIO/gpio-reference.html" class="peripheral-card">
           <div class="card-icon">👆</div>
           <h3 class="card-title">GPIO</h3>
           <p class="card-subtitle">通用输入输出 · 1990s</p>
           <p class="card-desc">可配置数字I/O引脚，支持推挽/开漏/上拉/下拉/模拟/复用功能。GPIO中断。</p>
-        </div>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🖐️</div>
           <h3 class="card-title">TSC</h3>
@@ -1212,12 +1281,12 @@ html.dark .theme-toggle .icon-moon { display: none; }
         <span class="category-count">9 项</span>
       </div>
       <div class="peripheral-grid">
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P141_BLE/ble-embedded-guide.html" class="peripheral-card">
           <div class="card-icon">📶</div>
           <h3 class="card-title">BLE</h3>
           <p class="card-subtitle">蓝牙低功耗 · 2010</p>
           <p class="card-desc">集成BLE 4.0+射频基带，主/从/广播角色。低功耗，1~2Mbps。</p>
-        </div>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">📡</div>
           <h3 class="card-title">WiFi</h3>
@@ -1349,8 +1418,19 @@ html.dark .theme-toggle .icon-moon { display: none; }
   <!-- Footer -->
   <footer class="footer">
     <p>© 2026 嵌入式外设技术手册 | 使用 <a href="https://pages.github.com/" target="_blank">GitHub Pages</a> 托管</p>
-    <p style="margin-top: 0.5rem;">本站点始于 <span id="start-date">2026-01-01</span></p>
+    <p style="margin-top: 0.5rem;">本站点始于 <span id="start-date">2026-07-07</span></p>
   </footer>
+</div>
+
+<!-- 联系弹窗 -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-title">联系我</div>
+    <div class="modal-links" id="modalLinks">
+      <!-- 社区链接占位，后续填充 -->
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1411,14 +1491,21 @@ filterBar.addEventListener('click', (e) => {
   });
 });
 
-// ========== 运行天数 ==========
+// ========== 运行天数（从2026年7月7日开始实时累计） ==========
 function calculateRunningDays() {
-  const startDate = new Date('2026-01-01');
-  const today = new Date();
-  const diffTime = Math.abs(today - startDate);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  document.getElementById('running-days').textContent = diffDays;
+  const startDate = new Date('2026-07-07T00:00:00');
+  const now = new Date();
+  const diffMs = now - startDate;
+  if (diffMs < 0) {
+    document.getElementById('running-days').textContent = '0';
+    return;
+  }
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  document.getElementById('running-days').textContent = days;
 }
+
+// 每秒更新一次
+setInterval(calculateRunningDays, 1000);
 
 // ========== 访问统计 ==========
 function initVisitorCount() {
@@ -1556,6 +1643,31 @@ function clearSearch() {
   });
   searchStats.textContent = '';
 }
+
+// ========== 联系弹窗 ==========
+const contactBtn = document.getElementById('contactBtn');
+const contactModal = document.getElementById('contactModal');
+const modalClose = document.getElementById('modalClose');
+
+contactBtn.addEventListener('click', () => {
+  contactModal.classList.add('active');
+});
+
+modalClose.addEventListener('click', () => {
+  contactModal.classList.remove('active');
+});
+
+contactModal.addEventListener('click', (e) => {
+  if (e.target === contactModal) {
+    contactModal.classList.remove('active');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && contactModal.classList.contains('active')) {
+    contactModal.classList.remove('active');
+  }
+});
 </script>
 </body>
 </html>

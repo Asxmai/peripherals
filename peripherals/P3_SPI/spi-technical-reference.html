@@ -748,7 +748,96 @@ flowchart TD
     当 CPOL=1（空闲高电平）时，SCK 建议配置为上拉；当 CPOL=0（空闲低电平）时，SCK 可不配置上下拉或配置为下拉。这能确保在 SPI 未使能期间，时钟线处于确定的电平状态，避免从设备误触发。
   </div>
 
-  <h3>步骤 ③：SPI 基本参数配置</h3>
+  <h3>关键配置函数（HAL 库）</h3>
+  <p>以下是 STM32 HAL 库中用于 SPI GPIO 初始化的关键函数：</p>
+  <ul>
+    <li><code>HAL_GPIO_Init()</code>：初始化 GPIO 引脚，配置模式、速度、上下拉等</li>
+    <li><code>__HAL_RCC_GPIOx_CLK_ENABLE()</code>：使能 GPIO 端口时钟（如 GPIOA、GPIOB）</li>
+    <li><code>__HAL_RCC_SPIx_CLK_ENABLE()</code>：使能 SPI 外设时钟（如 SPI1）</li>
+    <li><code>HAL_SPI_Init()</code>：初始化 SPI 外设参数（主从模式、波特率、CPOL/CPHA 等）</li>
+    <li><code>HAL_GPIO_WritePin()</code>：手动控制 CS 引脚电平（软件 NSS 模式）</li>
+  </ul>
+
+  <h3>GPIO 初始化示例代码</h3>
+  <pre><code class="language-c">/* SPI1 GPIO 初始化示例（PA5-SCK, PA6-MISO, PA7-MOSI, PA4-CS） */
+void SPI1_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIOA 和 SPI1 时钟 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_SPI1_CLK_ENABLE();
+    
+    /* 2. 配置 SCK 引脚 (PA5) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_5;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_PULLDOWN;        /* CPOL=0 时下拉；CPOL=1 时改为上拉 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH; /* 超高速，保证时钟边沿陡峭 */
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;        /* AF5 对应 SPI1 */
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 MOSI 引脚 (PA6) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_6;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;          /* 无上下拉，由从设备驱动 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 4. 配置 MISO 引脚 (PA7) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_7;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;          /* 无上下拉 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 5. 配置 CS/NSS 引脚 (PA4) - 软件 NSS 模式 */
+    GPIO_InitStruct.Pin       = GPIO_PIN_4;
+    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;  /* 通用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;          /* 上拉，确保空闲时 CS 为高 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 6. 初始状态：CS 拉高（未选中从设备） */
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+}</code></pre>
+
+  <h3>外设初始化示例代码</h3>
+  <pre><code class="language-c">/* SPI1 外设初始化示例 */
+void SPI1_Init(void)
+{
+    SPI_HandleTypeDef hspi1 = {0};
+    
+    /* 1. 配置 SPI 基本参数 */
+    hspi1.Instance               = SPI1;
+    hspi1.Init.Mode              = SPI_MODE_MASTER;        /* 主设备模式 */
+    hspi1.Init.Direction         = SPI_DIRECTION_2LINES;   /* 全双工 */
+    hspi1.Init.DataSize          = SPI_DATASIZE_8BIT;      /* 8位数据 */
+    hspi1.Init.CLKPolarity       = SPI_POLARITY_LOW;       /* CPOL=0 */
+    hspi1.Init.CLKPhase          = SPI_PHASE_1EDGE;        /* CPHA=0 */
+    hspi1.Init.NSS               = SPI_NSS_SOFT;           /* 软件NSS */
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8; /* 8分频 */
+    hspi1.Init.FirstBit          = SPI_FIRSTBIT_MSB;       /* MSB优先 */
+    hspi1.Init.TIMode            = SPI_TIMODE_DISABLE;
+    hspi1.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
+    HAL_SPI_Init(&hspi1);
+}
+
+/* SPI 发送接收示例 */
+uint8_t SPI1_TransferByte(uint8_t txData)
+{
+    uint8_t rxData;
+    HAL_SPI_TransmitReceive(&hspi1, &txData, &rxData, 1, HAL_MAX_DELAY);
+    return rxData;
+}</code></pre>
+
+  <div class="callout">
+    <strong>💡 关键提示</strong>
+    <p>SPI GPIO 配置要点:SCK/MOSI/MISO 使用<strong>复用推挽输出</strong>,CS 引脚使用<strong>通用推挽输出</strong>(软件 NSS)。CPOL 决定 SCK 空闲电平,相应配置上拉或下拉。</p>
+  </div>
+
+  <h3>步骤 ③:SPI 基本参数配置</h3>
   <ul>
     <li><strong>主/从模式</strong>：选择 Master 或 Slave。主设备控制时钟，从设备跟随。</li>
     <li><strong>波特率预分频</strong>：SPI 时钟 = APB 时钟 / 预分频系数。常见分频为 2/4/8/16/32/64/128/256。需确保分频后的 SCK 频率在从设备允许范围内。</li>

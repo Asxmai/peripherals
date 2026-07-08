@@ -541,6 +541,81 @@ I3C 在保持 I2C 引脚兼容性的同时，将数据传输速率从 I2C 的 1 
 <h4>电压等级</h4>
 <p>I3C 定义了三个标称电压等级：<mark class="key">1.2V</mark>、<mark class="key">1.8V</mark> 和 <mark class="key">3.3V</mark>。例如 STM32H5 系列通过专用 VDDIO2 电源引脚支持 I3C 在 1.2V 下工作（最低 1.08V）。I3CCLK 内核时钟频率必须大于 2 倍 SCL 频率（即 > 25 MHz 以支持 12.5 MHz SCL）。</p>
 
+<h4>关键配置函数（HAL 库）</h4>
+<p>以下是 STM32 HAL 库中用于 I3C GPIO 初始化的关键函数：</p>
+<ul>
+  <li><code>HAL_GPIO_Init()</code>：初始化 GPIO 引脚，配置模式、速度、上下拉等</li>
+  <li><code>__HAL_RCC_GPIOx_CLK_ENABLE()</code>：使能 GPIO 端口时钟</li>
+  <li><code>__HAL_RCC_I3Cx_CLK_ENABLE()</code>：使能 I3C 外设时钟（如 I3C1）</li>
+  <li><code>HAL_I3C_Init()</code>：初始化 I3C 外设参数</li>
+  <li><code>HAL_I3C_Ctrl_Dynamic_Address_Assign()</code>：控制器发起动态地址分配（DAA）</li>
+  <li><code>HAL_I3C_Bus_Config()</code>：配置总线参数（I3C/I2C 混合模式）</li>
+</ul>
+
+<h4>GPIO 初始化示例代码</h4>
+<pre><code class="language-c">/* I3C1 GPIO 初始化示例（PA0-SCL, PA1-SDA） */
+void I3C1_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIOA 和 I3C1 时钟 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_I3C1_CLK_ENABLE();
+    
+    /* 2. 配置 SCL 引脚 (PA0) - 推挽输出（I3C 纯模式下 SCL 始终推挽） */
+    GPIO_InitStruct.Pin       = GPIO_PIN_0;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;          /* 上拉由 I3C 内部控制 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF4_I3C1;        /* AF4 对应 I3C1 */
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 SDA 引脚 (PA1) - 初始开漏，I3C 外设会自动切换推挽/开漏 */
+    GPIO_InitStruct.Pin       = GPIO_PIN_1;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;      /* 复用开漏输出 */
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;          /* 外部上拉 1~2kΩ */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF4_I3C1;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 注：SDA 的推挽/开漏切换由 I3C 外设硬件自动完成，
+       在仲裁/DAA/IBI/I2C 兼容阶段使用开漏，
+       在 SDR/HDR 数据传输阶段自动切换为推挽 */
+}</code></pre>
+
+<h4>外设初始化示例代码</h4>
+<pre><code class="language-c">/* I3C1 外设初始化示例 */
+void I3C1_Init(void)
+{
+    I3C_HandleTypeDef hi3c1 = {0};
+    
+    /* 1. 配置 I3C 控制器基本参数 */
+    hi3c1.Instance                  = I3C1;
+    hi3c1.Init.CtrlBusMode          = I3C_CTRL_BUS_MODE_I3C;  /* I3C 模式 */
+    hi3c1.Init.CtrlBusSpeed.SDR0    = 12500000;  /* SDR 12.5 Mbps */
+    hi3c1.Init.CtrlBusSpeed.SDR1    = 8000000;   /* SDR 8 Mbps */
+    hi3c1.Init.SupportI2CDevice     = ENABLE;     /* 支持 I2C 设备 */
+    hi3c1.Init.SupportDynamicAddress = ENABLE;    /* 支持动态地址分配 */
+    HAL_I3C_Init(&hi3c1);
+    
+    /* 2. 发起动态地址分配(DAA) */
+    HAL_I3C_Ctrl_Dynamic_Address_Assign(&hi3c1, HAL_MAX_DELAY);
+    
+    /* 3. 使能带内中断(IBI) */
+    HAL_I3C_Ctrl_Enable_IBI(&hi3c1);
+}
+
+/* I3C SDR 传输示例 */
+HAL_StatusTypeDef I3C1_Transfer(uint16_t devAddr, uint8_t *data, uint16_t len)
+{
+    return HAL_I3C_Ctrl_Transmit_SDR(&hi3c1, devAddr, data, len, HAL_MAX_DELAY);
+}</code></pre>
+
+<div class="callout">
+  <strong>💡 关键提示</strong>
+  <p>I3C GPIO 配置的核心是 SDA 引脚的<strong>开漏/推挽动态切换</strong>。在 HAL 库中,SDA 初始化为开漏模式,I3C 外设硬件会根据当前工作阶段(仲裁、DAA、数据传输等)自动切换驱动模式,无需软件干预。</p>
+</div>
+
 <h3 id="ch2-3">2.3 初始化与 DAA 流程</h3>
 
 <p>动态地址分配（Dynamic Address Assignment, DAA）是 I3C 总线上电后最关键的初始化步骤。控制器通过 DAA 为每个目标设备分配唯一的 7-bit 动态地址。</p>

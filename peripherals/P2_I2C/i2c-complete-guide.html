@@ -199,6 +199,24 @@ code {
   border-radius: 3px;
   color: var(--accent);
 }
+pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.2rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'JetBrainsMono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
 
 /* SVG diagrams */
 .diagram {
@@ -488,6 +506,113 @@ footer {
   <li>读取 SDA 时：<strong>先写 ODR=1 释放开漏</strong>（NMOS 截止，上拉电阻拉高总线），<strong>然后直接读 IDR（输入数据寄存器）</strong>获取引脚真实电平。无需切换到浮空输入模式 — 开漏输出模式下 IDR 始终反映引脚实际电平</li>
   <li>备选方案：也可在接收时将 SDA 动态切换为浮空/上拉输入模式，发送时再切回开漏输出，但频繁切换模式会降低速率</li>
 </ul>
+
+<h3>3.4 关键配置函数（HAL 库）</h3>
+<p>以下是 STM32 HAL 库中用于 I2C GPIO 初始化的关键函数：</p>
+<ul>
+  <li><code>HAL_GPIO_Init()</code>：初始化 GPIO 引脚，配置模式、速度、上下拉等</li>
+  <li><code>__HAL_RCC_GPIOx_CLK_ENABLE()</code>：使能 GPIO 端口时钟（如 GPIOB）</li>
+  <li><code>__HAL_RCC_I2Cx_CLK_ENABLE()</code>：使能 I2C 外设时钟（如 I2C1）</li>
+  <li><code>HAL_I2C_Init()</code>：初始化 I2C 外设参数（波特率、地址模式等）</li>
+</ul>
+
+<h3>3.5 GPIO 初始化示例代码</h3>
+<pre><code class="language-c">/* I2C1 GPIO 初始化示例（PB6-SCL, PB7-SDA） */
+void I2C1_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIOB 和 I2C1 时钟 */
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_I2C1_CLK_ENABLE();
+    
+    /* 2. 配置 SCL 引脚 (PB6) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_6;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;      /* 复用开漏输出 - I2C 必须使用开漏 */
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;          /* 上拉，或由外部上拉电阻提供 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH; /* 高速输出，保证边沿陡峭 */
+    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;        /* AF4 对应 I2C1 */
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 SDA 引脚 (PB7) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_7;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;      /* 复用开漏输出 */
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+}
+
+/* 软件 I2C GPIO 初始化示例（任意引脚） */
+void SoftI2C_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    
+    /* SCL 引脚 - 开漏输出 */
+    GPIO_InitStruct.Pin   = GPIO_PIN_10;
+    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  /* 通用开漏输出 */
+    GPIO_InitStruct.Pull  = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* SDA 引脚 - 开漏输出（始终保持开漏模式） */
+    GPIO_InitStruct.Pin   = GPIO_PIN_11;
+    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pull  = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* 初始状态：释放总线（输出高电平） */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+}
+
+/* 读取 SDA 引脚电平（软件 I2C） */
+uint8_t SoftI2C_ReadSDA(void)
+{
+    /* 先释放 SDA（写 ODR=1，开漏截止） */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+    /* 直接读 IDR（输入数据寄存器）获取引脚实际电平 */
+    return HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_11);
+}</code></pre>
+
+<h3>3.6 外设初始化示例代码</h3>
+<pre><code class="language-c">/* I2C1 外设初始化示例 */
+void I2C1_Init(void)
+{
+    I2C_HandleTypeDef hi2c1 = {0};
+    
+    /* 1. 配置 I2C 基本参数 */
+    hi2c1.Instance             = I2C1;
+    hi2c1.Init.Timing          = 0x00E22562;    /* I2C 时序参数(100kHz @ 48MHz) */
+    hi2c1.Init.OwnAddress1     = 0x00;          /* 主设备地址(可为0) */
+    hi2c1.Init.AddressingMode  = I2C_ADDRESSINGMODE_7BIT;
+    hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+    hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+    hi2c1.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
+    HAL_I2C_Init(&hi2c1);
+    
+    /* 2. 配置模拟滤波器(可选) */
+    HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE);
+}
+
+/* I2C 写数据示例(主机发送) */
+HAL_StatusTypeDef I2C1_Write(uint16_t devAddr, uint8_t *data, uint16_t len)
+{
+    return HAL_I2C_Master_Transmit(&hi2c1, devAddr << 1, data, len, HAL_MAX_DELAY);
+}
+
+/* I2C 读数据示例(主机接收) */
+HAL_StatusTypeDef I2C1_Read(uint16_t devAddr, uint8_t *data, uint16_t len)
+{
+    return HAL_I2C_Master_Receive(&hi2c1, devAddr << 1, data, len, HAL_MAX_DELAY);
+}</code></pre>
+
+<div class="callout">
+  <strong>💡 关键提示</strong>
+  <p>I2C GPIO 配置的核心要点:<strong>必须使用开漏模式</strong>,这是 I2C 总线"线与"特性的硬件基础。推挽输出会导致总线冲突,可能损坏 GPIO。</p>
+</div>
 
 <!-- ═══════════════ CH4: 外设配置流程 ═══════════════ -->
 <h2 class="section-title" id="ch4">四、I2C 外设配置流程</h2>

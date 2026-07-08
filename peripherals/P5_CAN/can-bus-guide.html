@@ -223,16 +223,15 @@ tr:hover td { background: rgba(88,166,255,0.03); }
 
 /* Code blocks */
 pre {
-  background: var(--bg2);
-  border: 1px solid var(--rule);
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.2rem;
   border-radius: 6px;
-  padding: 16px 20px;
   overflow-x: auto;
   font-family: 'JetBrainsMono', monospace;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   line-height: 1.6;
-  color: var(--ink);
-  margin: 16px 0;
+  margin: 1rem 0;
 }
 code {
   font-family: 'JetBrainsMono', monospace;
@@ -241,6 +240,13 @@ code {
   padding: 2px 6px;
   border-radius: 3px;
   color: var(--accent);
+}
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
 }
 
 /* Callouts */
@@ -523,6 +529,100 @@ flowchart TD
   <div class="callout warn">
     <div class="callout-title">注意</div>
     <p>不同 STM32 系列的 AF 编号和可用引脚映射不同，务必查阅具体型号的参考手册和数据手册。输出速度建议设为高速，以减少信号边沿的上升/下降时间。</p>
+  </div>
+
+  <h3>关键配置函数（HAL 库）</h3>
+  <p>以下是 STM32 HAL 库中用于 CAN GPIO 初始化的关键函数：</p>
+  <ul>
+    <li><code>HAL_GPIO_Init()</code>：初始化 GPIO 引脚，配置模式、速度、上下拉等</li>
+    <li><code>__HAL_RCC_GPIOx_CLK_ENABLE()</code>：使能 GPIO 端口时钟（如 GPIOA、GPIOB）</li>
+    <li><code>__HAL_RCC_CANx_CLK_ENABLE()</code>：使能 CAN 外设时钟（如 CAN1）</li>
+    <li><code>HAL_CAN_Init()</code>：初始化 CAN 外设参数（波特率、工作模式等）</li>
+    <li><code>HAL_CAN_ConfigFilter()</code>：配置 CAN 消息过滤器</li>
+    <li><code>HAL_CAN_Start()</code>：启动 CAN 外设，进入正常工作模式</li>
+  </ul>
+
+  <h3>GPIO 初始化示例代码</h3>
+  <pre><code class="language-c">/* CAN1 GPIO 初始化示例（PA11-RX, PA12-TX） */
+void CAN1_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIOA 和 CAN1 时钟 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_CAN1_CLK_ENABLE();
+    
+    /* 2. 配置 CAN_RX 引脚 (PA11) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_11;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用模式，由 CAN 外设控制 */
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;          /* 无上下拉，由收发器驱动 */
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH; /* 高速输出 */
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;        /* AF9 对应 CAN1 */
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 CAN_TX 引脚 (PA12) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_12;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;      /* 复用推挽输出 */
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}</code></pre>
+
+  <h3>外设初始化示例代码</h3>
+  <pre><code class="language-c">/* CAN1 外设初始化示例 */
+void CAN1_Init(void)
+{
+    CAN_HandleTypeDef hcan1 = {0};
+    
+    /* 1. 配置 CAN 基本参数 */
+    hcan1.Instance                  = CAN1;
+    hcan1.Init.Prescaler            = 4;        /* 预分频 */
+    hcan1.Init.Mode                 = CAN_MODE_NORMAL;  /* 正常模式 */
+    hcan1.Init.SyncJumpWidth        = CAN_SJW_1TQ;
+    hcan1.Init.TimeSeg1             = CAN_BS1_9TQ;
+    hcan1.Init.TimeSeg2             = CAN_BS2_6TQ;
+    hcan1.Init.TimeTriggeredMode    = DISABLE;
+    hcan1.Init.AutoBusControl       = ENABLE;
+    hcan1.Init.AutoWakeUp           = DISABLE;
+    hcan1.Init.AutoRetransmission   = ENABLE;
+    hcan1.Init.ReceiveFifoLocked    = DISABLE;
+    hcan1.Init.TransmitFifoPriority = DISABLE;
+    HAL_CAN_Init(&hcan1);
+    
+    /* 2. 配置过滤器(接收所有消息) */
+    CAN_FilterTypeDef filterConfig;
+    filterConfig.FilterBank           = 0;
+    filterConfig.FilterMode           = CAN_FILTERMODE_IDMASK;
+    filterConfig.FilterScale          = CAN_FILTERSCALE_32BIT;
+    filterConfig.FilterIdHigh         = 0x0000;
+    filterConfig.FilterIdLow          = 0x0000;
+    filterConfig.FilterMaskIdHigh     = 0x0000;
+    filterConfig.FilterMaskIdLow      = 0x0000;
+    filterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+    filterConfig.FilterActivation     = ENABLE;
+    HAL_CAN_ConfigFilter(&hcan1, &filterConfig);
+    
+    /* 3. 启动 CAN */
+    HAL_CAN_Start(&hcan1);
+}
+
+/* CAN 发送数据示例 */
+void CAN1_Send(uint32_t id, uint8_t *data, uint8_t len)
+{
+    CAN_TxHeaderTypeDef txHeader;
+    uint32_t txMailbox;
+    
+    txHeader.StdId = id;
+    txHeader.IDE   = CAN_ID_STD;
+    txHeader.RTR   = CAN_RTR_DATA;
+    txHeader.DLC   = len;
+    HAL_CAN_AddTxMessage(&hcan1, &txHeader, data, &txMailbox);
+}</code></pre>
+
+  <div class="callout">
+    <div class="callout-title">💡 关键提示</div>
+    <p>CAN GPIO 配置要点:CAN_TX 和 CAN_RX 都配置为<strong>复用推挽模式</strong>(<code>GPIO_MODE_AF_PP</code>),由 CAN 外设内部控制引脚方向。AF 编号因芯片系列而异(STM32F4 的 CAN1 通常为 AF9)。输出速度建议设为<strong>高速</strong>,以减少信号边沿时间,提高通信可靠性。</p>
   </div>
 </section>
 

@@ -751,6 +751,73 @@ flowchart TD
 
 <p>GPIO 寄存器配置要点：<code>MODER</code> 设为复用模式（0b10），<code>OSPEEDR</code> 设为高速（0b11），<code>PUPDR</code> 设为无上下拉（0b00），<code>AFR</code> 寄存器设置 AF11。</p>
 
+<h4>GPIO 初始化示例代码</h4>
+<pre><code class="language-c">/* Ethernet RMII GPIO 初始化示例 */
+void ETH_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIO 端口时钟 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    
+    /* 2. 配置 GPIOA 引脚 (PA1-REF_CLK, PA2-MDIO, PA7-CRS_DV) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 GPIOB 引脚 (PB11-TX_EN, PB12-TXD0, PB13-TXD1) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* 4. 配置 GPIOC 引脚 (PC1-MDC, PC4-RXD0, PC5-RXD1) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+    HAL_GPIO_Init(GPIOC, &amp;GPIO_InitStruct);
+}</code></pre>
+
+<h4>外设初始化示例代码</h4>
+<pre><code class="language-c">/* Ethernet MAC 初始化示例 */
+void ETH_Init(void)
+{
+    ETH_HandleTypeDef heth = {0};
+    
+    /* 1. 使能以太网时钟 */
+    __HAL_RCC_ETH_CLK_ENABLE();
+    
+    /* 2. 配置 MAC 基本参数 */
+    heth.Instance               = ETH;
+    heth.Init.MACAddr[0]        = 0x02;  /* MAC 地址（本地管理地址） */
+    heth.Init.MACAddr[1]        = 0x00;
+    heth.Init.MACAddr[2]        = 0x00;
+    heth.Init.MACAddr[3]        = 0x00;
+    heth.Init.MACAddr[4]        = 0x00;
+    heth.Init.MACAddr[5]        = 0x01;
+    heth.Init.MediaInterface    = HAL_ETH_RMII_MODE;
+    heth.Init.RxBuffLen         = 1524;
+    HAL_ETH_Init(&amp;heth);
+    
+    /* 3. 配置 DMA 描述符 */
+    HAL_ETH_DescAssignMemory(&amp;heth, 0, txBuffer, NULL);
+    
+    /* 4. 启动以太网 */
+    HAL_ETH_Start(&amp;heth);
+    
+    /* 5. 通过 MDIO 配置 PHY（示例：LAN8720） */
+    HAL_ETH_WritePHYRegister(&amp;heth, PHY_ADDRESS, PHY_BCR, PHY_AUTONEGOTIATION);
+}</code></pre>
+
 <h3>3.3 MAC 控制器初始化</h3>
 <p>MAC 控制器初始化包括以下关键配置项：</p>
 <div class="table-wrap">

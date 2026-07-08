@@ -583,6 +583,94 @@ html.dark svg path[stroke="#dc2626"] { stroke: #ef4444; }
 nCS 在空闲时应保持高电平。如果 MCU 复位期间 GPIO 处于浮空状态，可能导致 Flash 被意外选中。建议在 GPIO 配置完成前，先将 nCS 设为推挽输出高电平，再切换到复用模式。
 </div>
 
+<h4>GPIO 初始化示例代码</h4>
+<pre><code class="language-c">/* QSPI GPIO 初始化示例（PB2-CLK, PB6-nCS, PD12-IO0~PD13-IO3） */
+void QSPI_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIO 端口时钟 */
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    
+    /* 2. 先配置 nCS 为推挽输出高电平（防止复位期间误选通） */
+    GPIO_InitStruct.Pin   = GPIO_PIN_6;
+    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull  = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);  /* nCS = HIGH */
+    
+    /* 3. 配置 CLK 引脚 (PB2) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_2;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* 4. 配置 nCS 引脚 (PB6) - 切换为复用模式 */
+    GPIO_InitStruct.Pin       = GPIO_PIN_6;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+    
+    /* 5. 配置 IO0~IO3 引脚 (PD11-PD13, PB1) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
+    HAL_GPIO_Init(GPIOD, &amp;GPIO_InitStruct);
+    
+    GPIO_InitStruct.Pin       = GPIO_PIN_1;
+    GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
+    HAL_GPIO_Init(GPIOB, &amp;GPIO_InitStruct);
+}</code></pre>
+
+<h4>外设初始化示例代码</h4>
+<pre><code class="language-c">/* QSPI 外设初始化示例 */
+void QSPI_Init(void)
+{
+    QSPI_HandleTypeDef hqspi = {0};
+    
+    /* 1. 使能 QSPI 时钟 */
+    __HAL_RCC_QSPI_CLK_ENABLE();
+    
+    /* 2. 配置 QSPI 基本参数 */
+    hqspi.Instance                  = QUADSPI;
+    hqspi.Init.ClockPrescaler       = 2;       /* 200MHz / 2 = 100MHz SCK */
+    hqspi.Init.FifoThreshold        = 4;       /* FIFO 阈值 */
+    hqspi.Init.SampleShifting       = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
+    hqspi.Init.FlashSize            = 23;      /* 2^(23+1) = 16MB */
+    hqspi.Init.ChipSelectHighTime   = QSPI_CS_HIGH_TIME_2_CYCLE;
+    hqspi.Init.ClockMode            = QSPI_CLOCK_MODE_0;
+    hqspi.Init.FlashID              = QSPI_FLASH_ID_1;
+    HAL_QSPI_Init(&amp;hqspi);
+}
+
+/* QSPI 读取 Flash ID 示例 */
+uint8_t QSPI_ReadFlashID(void)
+{
+    QSPI_CommandTypeDef cmd = {0};
+    uint8_t id;
+    
+    cmd.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+    cmd.Instruction       = 0x9F;     /* RDID 命令 */
+    cmd.AddressMode       = QSPI_ADDRESS_NONE;
+    cmd.DataMode          = QSPI_DATA_1_LINE;
+    cmd.NbData            = 3;
+    cmd.DummyCycles       = 0;
+    cmd.DdrMode           = QSPI_DDR_MODE_DISABLE;
+    cmd.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+    
+    HAL_QSPI_Command(&amp;hqspi, &amp;cmd, HAL_MAX_DELAY);
+    HAL_QSPI_Receive(&amp;hqspi, &amp;id, HAL_MAX_DELAY);
+    return id;
+}</code></pre>
+
 <h3>2.4 第三步：QSPI 基础参数配置</h3>
 <p>这些参数定义了 QSPI 外设与 Flash 芯片之间的基本通信框架：</p>
 

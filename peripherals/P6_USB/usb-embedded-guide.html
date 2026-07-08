@@ -925,6 +925,75 @@ sup a:hover { text-decoration: underline; }
     <li><strong>ESD 保护</strong>：在连接器侧放置 TVS 二极管阵列，保护 MCU 引脚</li>
   </ol>
 
+  <h4>GPIO 初始化示例代码</h4>
+  <pre><code class="language-c">/* USB OTG FS GPIO 初始化示例（PA11-DM, PA12-DP, PA9-VBUS, PA10-ID） */
+void USB_OTG_FS_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    
+    /* 1. 使能 GPIOA 时钟 */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    
+    /* 2. 配置 USB_DP 引脚 (PA12) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_12;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 3. 配置 USB_DM 引脚 (PA11) */
+    GPIO_InitStruct.Pin       = GPIO_PIN_11;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 4. 配置 VBUS 引脚 (PA9) - 模拟输入 */
+    GPIO_InitStruct.Pin       = GPIO_PIN_9;
+    GPIO_InitStruct.Mode      = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+    
+    /* 5. 配置 ID 引脚 (PA10) - 复用开漏 */
+    GPIO_InitStruct.Pin       = GPIO_PIN_10;
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull      = GPIO_PULLUP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+    HAL_GPIO_Init(GPIOA, &amp;GPIO_InitStruct);
+}</code></pre>
+
+  <h4>外设初始化示例代码</h4>
+  <pre><code class="language-c">/* USB OTG FS Device 模式初始化示例 */
+void USB_OTG_FS_Init(void)
+{
+    PCD_HandleTypeDef hpcd_USB_OTG_FS = {0};
+    
+    /* 1. 使能 USB 时钟（48MHz） */
+    __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+    
+    /* 2. 配置 USB 基本参数 */
+    hpcd_USB_OTG_FS.Instance                 = USB_OTG_FS;
+    hpcd_USB_OTG_FS.Init.dev_endpoints       = 4;
+    hpcd_USB_OTG_FS.Init.speed               = PCD_SPEED_FULL;
+    hpcd_USB_OTG_FS.Init.dma_enable          = DISABLE;
+    hpcd_USB_OTG_FS.Init.low_power_enable    = DISABLE;
+    hpcd_USB_OTG_FS.Init.phy_itface          = PCD_PHY_EMBEDDED;
+    hpcd_USB_OTG_FS.Init.Sof_enable          = DISABLE;
+    hpcd_USB_OTG_FS.Init.vbus_sensing_enable = ENABLE;
+    hpcd_USB_OTG_FS.Init.use_dedicated_ep1   = DISABLE;
+    HAL_PCD_Init(&amp;hpcd_USB_OTG_FS);
+    
+    /* 3. 配置 RX FIFO 大小 */
+    HAL_PCDEx_SetRxFiFo(&amp;hpcd_USB_OTG_FS, 128);
+    
+    /* 4. 配置 TX FIFO */
+    HAL_PCDEx_SetTxFiFo(&amp;hpcd_USB_OTG_FS, 0, 64);   /* EP0: 64 bytes */
+    HAL_PCDEx_SetTxFiFo(&amp;hpcd_USB_OTG_FS, 1, 128);  /* EP1: 128 bytes */
+}</code></pre>
+
   <h3>3.3 时钟配置</h3>
 
   <p>USB 对时钟精度要求极高，这是配置中最容易出问题的环节：</p>

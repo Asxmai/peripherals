@@ -6,16 +6,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OSPI (Octal SPI) 嵌入式工程师技术参考</title>
 <style>
-@font-face { font-family: 'Heading'; src: url('./_shared/fonts/InstrumentSans-Regular.ttf') format('truetype'); font-weight: 400; }
-@font-face { font-family: 'Heading'; src: url('./_shared/fonts/InstrumentSans-Bold.ttf') format('truetype'); font-weight: 700; }
-@font-face { font-family: 'Body'; src: url('./_shared/fonts/WorkSans-Regular.ttf') format('truetype'); font-weight: 400; }
-@font-face { font-family: 'Body'; src: url('./_shared/fonts/WorkSans-Bold.ttf') format('truetype'); font-weight: 700; }
-@font-face { font-family: 'Mono'; src: url('./_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; }
-@font-face { font-family: 'Mono'; src: url('./_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight: 700; }
+@font-face { font-family: 'Heading'; src: url('../../_shared/fonts/InstrumentSans-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Heading'; src: url('../../_shared/fonts/InstrumentSans-Bold.ttf') format('truetype'); font-weight: 700; }
+@font-face { font-family: 'Body'; src: url('../../_shared/fonts/WorkSans-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Body'; src: url('../../_shared/fonts/WorkSans-Bold.ttf') format('truetype'); font-weight: 700; }
+@font-face { font-family: 'Mono'; src: url('../../_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Mono'; src: url('../../_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight: 700; }
 
 :root {
   --bg: #FAFBFC;
   --bg2: #F0F2F5;
+  --bg3: #E2E7F0;
   --ink: #1A1D23;
   --muted: #6B7280;
   --rule: #D1D5DB;
@@ -25,6 +26,21 @@
   --warning: #D97706;
   --danger: #DC2626;
   --code-bg: #F3F4F6;
+}
+
+html.dark {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --bg3: #334155;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --rule: #334155;
+  --accent: #3b82f6;
+  --accent2: #10b981;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --code-bg: #1e293b;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -427,9 +443,82 @@ sup a:hover { text-decoration: underline; }
   h2 { break-after: avoid; }
   .diagram, .waveform-container { break-inside: avoid; }
 }
+
+/* ── Theme Toggle Button ── */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--bg2);
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.theme-toggle:hover {
+  background: var(--bg3);
+}
+
+/* ── Dark mode overrides ── */
+html.dark .report-header {
+  background: linear-gradient(180deg, #1e293b 0%, var(--bg) 100%);
+}
+html.dark strong {
+  color: #f1f5f9;
+}
+html.dark .waveform-container {
+  background: var(--bg2);
+}
+html.dark .compare-card {
+  background: var(--bg2);
+}
+html.dark .step-item::before {
+  background: var(--accent);
+}
+
+/* SVG dark mode overrides */
+html.dark svg rect[fill="#FAFBFC"],
+html.dark svg rect[fill="#F0F2F5"],
+html.dark svg rect[fill="#E8F0FE"],
+html.dark svg rect[fill="#FEF3E8"] { fill: #1e293b; }
+html.dark svg rect[fill="#FFFFFF"],
+html.dark svg rect[fill="white"] { fill: #0f172a; }
+html.dark svg text[fill="#1A1D23"] { fill: #f1f5f9; }
+html.dark svg text[fill="#6B7280"] { fill: #94a3b8; }
+html.dark svg text[fill="#2563EB"] { fill: #3b82f6; }
+html.dark svg text[fill="#0891B2"] { fill: #10b981; }
+html.dark svg text[fill="#059669"] { fill: #10b981; }
+html.dark svg text[fill="#D97706"] { fill: #f59e0b; }
+html.dark svg text[fill="#DC2626"] { fill: #ef4444; }
+html.dark svg text[fill="#7C3AED"] { fill: #8b5cf6; }
+html.dark svg text[fill="#DB2777"] { fill: #ec4899; }
+html.dark svg line[stroke="#2563EB"] { stroke: #3b82f6; }
+html.dark svg line[stroke="#0891B2"] { stroke: #10b981; }
+html.dark svg line[stroke="#059669"] { stroke: #10b981; }
+html.dark svg line[stroke="#D97706"] { stroke: #f59e0b; }
+html.dark svg line[stroke="#DC2626"] { stroke: #ef4444; }
+html.dark svg line[stroke="#D1D5DB"] { stroke: #475569; }
+html.dark svg polyline[stroke="#2563EB"] { stroke: #3b82f6; }
+html.dark svg polyline[stroke="#059669"] { stroke: #10b981; }
+html.dark svg circle[fill="#2563EB"] { fill: #3b82f6; }
+html.dark svg circle[fill="#0891B2"] { fill: #10b981; }
+html.dark svg circle[fill="#DC2626"] { fill: #ef4444; }
+html.dark svg path[stroke="#2563EB"] { stroke: #3b82f6; }
+html.dark svg path[stroke="#059669"] { stroke: #10b981; }
+html.dark svg path[stroke="#D97706"] { stroke: #f59e0b; }
+html.dark svg path[stroke="#DC2626"] { stroke: #ef4444; }
 </style>
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="切换主题">🌙</button>
 <div class="container">
 
 <!-- ===================== HEADER ===================== -->
@@ -679,6 +768,72 @@ __HAL_RCC_OCTOSPIM_CLK_ENABLE();
 __HAL_RCC_OSPI1_CLK_ENABLE();</code></pre>
 </div>
 </div>
+</div>
+
+<h4>外设初始化示例代码</h4>
+<pre><code class="language-c">/* OCTOSPI 外设初始化示例 */
+void OSPI_Init(void)
+{
+    OSPIM_HandleTypeDef hospi = {0};
+    XSPI_HandleTypeDef hxspi = {0};
+    
+    /* 1. 使能 OCTOSPI 时钟 */
+    __HAL_RCC_OCTOSPIM_CLK_ENABLE();
+    __HAL_RCC_OSPI1_CLK_ENABLE();
+    
+    /* 2. 配置 OCTOSPI 基本参数 */
+    hxspi.Instance                  = OCTOSPI1;
+    hxspi.Init.FifoThresholdByte    = 4;
+    hxspi.Init.MemorySize           = HAL_XSPI_SIZE_16MB;
+    hxspi.Init.ChipSelectHighTime   = 2;
+    hxspi.Init.FreeRunningClock     = HAL_XSPI_FREERUNCLK_DISABLE;
+    hxspi.Init.ClockMode            = HAL_XSPI_CLOCK_MODE_0;
+    hxspi.Init.ClockPrescaler       = 4;      /* OSPI CLK = 400MHz / 4 = 100MHz */
+    hxspi.Init.SampleShifting       = HAL_XSPI_SAMPLE_SHIFT_HALFCYCLE;
+    hxspi.Init.DelayHoldQuarterCycle = HAL_XSPI_DHQC_ENABLE;
+    hxspi.Init.ChipSelectBoundary   = HAL_XSPI_BONDARYOF_NONE;
+    hxspi.Init.MemoryMode           = HAL_XSPI_SINGLE_MEM;
+    hxspi.Init.MemoryType           = HAL_XSPI_MEMTYPE_MACRONIX;
+    hxspi.Init.WrapSize             = HAL_XSPI_WRAP_NOT_SUPPORTED;
+    HAL_XSPI_Init(&amp;hxspi);
+    
+    /* 3. 配置 OCTOSPI IO Manager */
+    hospi.Instance = OCTOSPIM;
+    hospi.Init.ClkPort   = 1;
+    hospi.Init.DQSPort   = 1;
+    hospi.Init.NCSPort   = 1;
+    hospi.Init.IOLowPort = HAL_OCTOSPIM_IOLOW_PORT_1;
+    HAL_OSPI_Init(&amp;hospi);
+}
+
+/* OSPI 内存映射模式初始化（用于 XIP 执行） */
+void OSPI_MemoryMapped_Init(void)
+{
+    XSPI_RegularCmdTypeDef cmd = {0};
+    XSPI_MemoryConfigTypeDef memCfg = {0};
+    
+    /* 配置读取命令（Quad Output Read） */
+    cmd.OperationType      = HAL_XSPI_OPTYPE_COMMON_CFG;
+    cmd.InstructionMode    = HAL_XSPI_INSTRUCTION_1_LINE;
+    cmd.InstructionWidth   = HAL_XSPI_INSTRUCTION_8_BITS;
+    cmd.InstructionDTRMode = HAL_XSPI_INSTRUCTION_DTR_DISABLE;
+    cmd.Instruction        = 0x6B;  /* Quad Output Read */
+    cmd.AddressMode        = HAL_XSPI_ADDRESS_1_LINE;
+    cmd.AddressWidth       = HAL_XSPI_ADDRESS_24_BITS;
+    cmd.AddressDTRMode     = HAL_XSPI_ADDRESS_DTR_DISABLE;
+    cmd.DataMode           = HAL_XSPI_DATA_4_LINES;
+    cmd.DataDTRMode        = HAL_XSPI_DATA_DTR_DISABLE;
+    cmd.DummyCycles        = 8;
+    cmd.DQSMode            = HAL_XSPI_DQS_DISABLE;
+    
+    /* 配置内存映射模式 */
+    memCfg.MemoryType      = HAL_XSPI_MEMTYPE_MACRONIX;
+    memCfg.MemorySize      = HAL_XSPI_SIZE_16MB;
+    memCfg.ChipSelectHighTime = 2;
+    memCfg.ClockPrescaler  = 4;
+    HAL_XSPI_Command(&amp;hxspi, &amp;cmd, HAL_MAX_DELAY);
+    HAL_XSPI_MemoryMapped(&amp;hxspi, &amp;memCfg);
+}</code></pre>
 
 <h3 id="ch2-3">2.3 时钟树配置</h3>
 
@@ -1688,11 +1843,36 @@ __HAL_RCC_OSPI1_CLK_ENABLE();</code></pre>
 </div><!-- end container -->
 
 <!-- Scripts -->
-<script src="./_shared/js/echarts.min.js"></script>
-<script src="./_shared/js/mermaid.min.js"></script>
+<script src="../../_shared/js/echarts.min.js"></script>
+<script src="../../_shared/js/mermaid.min.js"></script>
 <script>
 mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });
 </script>
 <script src="assets/charts.js"></script>
+
+<!-- ═══════════════════ THEME TOGGLE ═══════════════════ -->
+<script>
+(function() {
+  const toggle = document.getElementById('theme-toggle');
+  const html = document.documentElement;
+  
+  // 读取保存的主题或检测系统偏好
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    html.classList.add('dark');
+    toggle.textContent = '☀️';
+  }
+  
+  // 切换主题
+  toggle.addEventListener('click', function() {
+    html.classList.toggle('dark');
+    const isDark = html.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    toggle.textContent = isDark ? '☀️' : '🌙';
+  });
+})();
+</script>
 </body>
 </html>
