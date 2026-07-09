@@ -23,68 +23,68 @@
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| USART | 通用同步异步串行口 | [查看](./P1_USART/usart-guide.html) |
-| I2C | 集成电路总线 | [查看](./P2_I2C/i2c-complete-guide.html) |
-| SPI | 串行外设接口 | [查看](./P3_SPI/spi-technical-reference.html) |
-| I3C | 改进型集成电路总线 | [查看](./P4_I3C/i3c-technical-reference.html) |
-| CAN | 控制器局域网总线 | [查看](./P5_CAN/can-bus-guide.html) |
-| Ethernet MAC | 以太网媒体访问控制 | [查看](./P7_Ethernet_MAC/ethernet-mac-guide.html) |
-| USB | 通用串行总线 | [查看](./P6_USB/usb-embedded-guide.html) |
-| LIN | 本地互联网络 | [查看](./P14_LIN/lin-protocol-guide.html) |
-| IrDA | 红外数据通信 | [查看](./P15_IrDA/irda-technical-guide.html) |
-| RS485 | 差分串行通信 | [查看](./P8_RS485/rs485-guide.html) |
-| SDIO/SDMMC | 安全数字输入输出 | [查看](./P11_SDIO_SDMMC/sdio-sdmmc-guide.html) |
-| QSPI | 四线串行外设接口 | [查看](./P9_QSPI/qspi-technical-guide.html) |
-| OSPI | 八线串行外设接口 | [查看](./P10_OSPI/ospi-technical-reference.html) |
-| I2S | 集成电路间声音 | [查看](./P12_I2S/i2s-embedded-guide.html) |
-| SAI | 串行音频接口 | [查看](./P13_SAI/sai-reference-guide.html) |
-| LVDS | 低压差分信号 | [查看](./P23_LVDS/lvds-technical-guide.html) |
-| MIPI DSI | 移动产业处理器接口显示 | [查看](./P120_MIPI_DSI/mipi-dsi-guide.html) |
-| MIPI CSI-2 | 移动产业处理器接口摄像头 | [查看](./P121_MIPI_CSI_2/mipi-csi2-guide.html) |
-| DPI | 显示像素接口 | [查看](./P123_DPI/dpi-embedded-guide.html) |
+| USART | 通用同步异步串行口 | [查看](./peripherals/P1_USART/usart-guide.html) |
+| I2C | 集成电路总线 | [查看](./peripherals/P2_I2C/i2c-complete-guide.html) |
+| SPI | 串行外设接口 | [查看](./peripherals/P3_SPI/spi-technical-reference.html) |
+| I3C | 改进型集成电路总线 | [查看](./peripherals/P4_I3C/i3c-technical-reference.html) |
+| CAN | 控制器局域网总线 | [查看](./peripherals/P5_CAN/can-bus-guide.html) |
+| Ethernet MAC | 以太网媒体访问控制 | [查看](./peripherals/P7_Ethernet_MAC/ethernet-mac-guide.html) |
+| USB | 通用串行总线 | [查看](./peripherals/P6_USB/usb-embedded-guide.html) |
+| LIN | 本地互联网络 | [查看](./peripherals/P14_LIN/lin-protocol-guide.html) |
+| IrDA | 红外数据通信 | [查看](./peripherals/P15_IrDA/irda-technical-guide.html) |
+| RS485 | 差分串行通信 | [查看](./peripherals/P8_RS485/rs485-guide.html) |
+| SDIO/SDMMC | 安全数字输入输出 | [查看](./peripherals/P11_SDIO_SDMMC/sdio-sdmmc-guide.html) |
+| QSPI | 四线串行外设接口 | [查看](./peripherals/P9_QSPI/qspi-technical-guide.html) |
+| OSPI | 八线串行外设接口 | [查看](./peripherals/P10_OSPI/ospi-technical-reference.html) |
+| I2S | 集成电路间声音 | [查看](./peripherals/P12_I2S/i2s-embedded-guide.html) |
+| SAI | 串行音频接口 | [查看](./peripherals/P13_SAI/sai-reference-guide.html) |
+| LVDS | 低压差分信号 | [查看](./peripherals/P23_LVDS/lvds-technical-guide.html) |
+| MIPI DSI | 移动产业处理器接口显示 | [查看](./peripherals/P120_MIPI_DSI/mipi-dsi-guide.html) |
+| MIPI CSI-2 | 移动产业处理器接口摄像头 | [查看](./peripherals/P121_MIPI_CSI_2/mipi-csi2-guide.html) |
+| DPI | 显示像素接口 | [查看](./peripherals/P123_DPI/dpi-embedded-guide.html) |
 
 ### 无线通信
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| BLE | 低功耗蓝牙 | [查看](./P141_BLE/ble-embedded-guide.html) |
-| WiFi | 无线局域网 | [查看](./P142_WiFi/wifi-embedded-guide.html) |
-| Zigbee | 低功耗网状网络 | [查看](./P143_Zigbee/zigbee-embedded-guide.html) |
-| NFC | 近场通信 | [查看](./P145_NFC/nfc-embedded-guide.html) |
-| GNSS | 全球导航卫星系统 | [查看](./P147_GNSS/gnss-embedded-guide.html) |
+| BLE | 低功耗蓝牙 | [查看](./peripherals/P141_BLE/ble-embedded-guide.html) |
+| WiFi | 无线局域网 | [查看](./peripherals/P142_WiFi/wifi-embedded-guide.html) |
+| Zigbee | 低功耗网状网络 | [查看](./peripherals/P143_Zigbee/zigbee-embedded-guide.html) |
+| NFC | 近场通信 | [查看](./peripherals/P145_NFC/nfc-embedded-guide.html) |
+| GNSS | 全球导航卫星系统 | [查看](./peripherals/P147_GNSS/gnss-embedded-guide.html) |
 
 ### 模拟外设
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| ADC | 模数转换器 | [查看](./P64_ADC/adc-guide.html) |
-| DAC | 数模转换器 | [查看](./P65_DAC/dac-guide.html) |
-| COMP | 比较器 | [查看](./P66_COMP/comp-guide.html) |
-| PGA | 可编程增益放大器 | [查看](./P73_PGA/pga-embedded-guide.html) |
+| ADC | 模数转换器 | [查看](./peripherals/P64_ADC/adc-guide.html) |
+| DAC | 数模转换器 | [查看](./peripherals/P65_DAC/dac-guide.html) |
+| COMP | 比较器 | [查看](./peripherals/P66_COMP/comp-guide.html) |
+| PGA | 可编程增益放大器 | [查看](./peripherals/P73_PGA/pga-embedded-guide.html) |
 
 ### 定时器与中断
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| TIM | 通用定时器 | [查看](./P52_TIM/stm32-tim-guide.html) |
-| IWDG | 独立看门狗 | [查看](./P55_IWDG/stm32-iwdg-guide.html) |
-| NVIC | 嵌套向量中断控制器 | [查看](./P78_NVIC/nvic-embedded-guide.html) |
-| EXTI | 外部中断 | [查看](./P79_EXTI/exti-guide.html) |
+| TIM | 通用定时器 | [查看](./peripherals/P52_TIM/stm32-tim-guide.html) |
+| IWDG | 独立看门狗 | [查看](./peripherals/P55_IWDG/stm32-iwdg-guide.html) |
+| NVIC | 嵌套向量中断控制器 | [查看](./peripherals/P78_NVIC/nvic-embedded-guide.html) |
+| EXTI | 外部中断 | [查看](./peripherals/P79_EXTI/exti-guide.html) |
 
 ### 存储与数据传输
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| FLASH | 闪存控制器 | [查看](./P83_FLASH/flash-controller-guide.html) |
-| DMA | 直接内存访问 | [查看](./P80_DMA/dma-technical-guide.html) |
-| DMA2D | 2D 图形加速器 | [查看](./P119_DMA2D/stm32-dma2d-guide.html) |
+| FLASH | 闪存控制器 | [查看](./peripherals/P83_FLASH/flash-controller-guide.html) |
+| DMA | 直接内存访问 | [查看](./peripherals/P80_DMA/dma-technical-guide.html) |
+| DMA2D | 2D 图形加速器 | [查看](./peripherals/P119_DMA2D/stm32-dma2d-guide.html) |
 
 ### 系统控制
 
 | 外设 | 说明 | 文档 |
 |------|------|------|
-| GPIO | 通用输入输出 | [查看](./P136_GPIO/gpio-reference.html) |
-| PWR/PMU | 电源管理单元 | [查看](./P99_PWR_PMU/stm32-pwr-pmu-guide.html) |
+| GPIO | 通用输入输出 | [查看](./peripherals/P136_GPIO/gpio-reference.html) |
+| PWR/PMU | 电源管理单元 | [查看](./peripherals/P99_PWR_PMU/stm32-pwr-pmu-guide.html) |
 
 ## 快速开始
 
@@ -92,7 +92,7 @@
 
 1. 克隆或下载本项目
 ```bash
-git clone https://github.com/your-username/embedded-peripherals-guide.git
+git clone https://github.com/asxmai/peripherals.git
 ```
 
 2. 打开主页
@@ -107,9 +107,9 @@ python -m http.server 8000
 
 ### 在线浏览
 
-访问 GitHub Pages 链接（部署后）：
+访问 GitHub Pages：
 ```
-https://your-username.github.io/embedded-peripherals-guide/
+https://asxmai.github.io/peripherals/
 ```
 
 ## 项目结构
