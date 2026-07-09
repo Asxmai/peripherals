@@ -1,0 +1,326 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="'JetBrains Mono', 'Noto Sans CJK SC', monospace" font-size="11">
+  <defs>
+    <style>
+      .title { font-size: 16px; font-weight: 700; fill: #1a1a2e; }
+      .subtitle { font-size: 11px; fill: #6c757d; }
+      .box-label { font-size: 13px; font-weight: 700; fill: #1a1a2e; }
+      .pin-label { font-size: 9px; fill: #495057; }
+      .wire { stroke: #495057; stroke-width: 1.2; fill: none; }
+      .wire-r { stroke: #c92a2a; stroke-width: 1.2; fill: none; }
+      .wire-g { stroke: #2b8a3e; stroke-width: 1.2; fill: none; }
+      .wire-b { stroke: #1864ab; stroke-width: 1.2; fill: none; }
+      .wire-ctrl { stroke: #7048e8; stroke-width: 1.2; fill: none; }
+      .wire-pwr { stroke: #e8590c; stroke-width: 1.5; fill: none; }
+      .ic-body { fill: #f1f3f5; stroke: #495057; stroke-width: 2; }
+      .resistor { fill: #fff9db; stroke: #e8590c; stroke-width: 1; }
+      .note { font-size: 10px; fill: #6c757d; }
+      .value { font-size: 9px; fill: #0066cc; font-weight: 600; }
+      .gnd { fill: #495057; }
+      .vcc { fill: #e8590c; font-weight: 700; font-size: 10px; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="25" text-anchor="middle" class="title">DPI 经典外部电路设计 (RGB888)</text>
+  <text x="550" y="42" text-anchor="middle" class="subtitle">MCU (LTDC) ↔ 串联匹配电阻 ↔ TFT-LCD 面板</text>
+
+  <!-- ==================== MCU Block ==================== -->
+  <rect x="20" y="60" width="200" height="640" class="ic-body" rx="6"/>
+  <text x="120" y="85" text-anchor="middle" class="box-label">MCU / SoC</text>
+  <text x="120" y="102" text-anchor="middle" class="subtitle">(STM32 LTDC)</text>
+
+  <!-- MCU Pin dots (right side) -->
+  <!-- Control signals -->
+  <circle cx="220" cy="130" r="3" fill="#495057"/>
+  <circle cx="220" cy="150" r="3" fill="#495057"/>
+  <circle cx="220" cy="170" r="3" fill="#495057"/>
+  <circle cx="220" cy="190" r="3" fill="#495057"/>
+  <!-- Red data -->
+  <circle cx="220" cy="220" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="235" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="250" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="265" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="280" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="295" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="310" r="3" fill="#c92a2a"/>
+  <circle cx="220" cy="325" r="3" fill="#c92a2a"/>
+  <!-- Green data -->
+  <circle cx="220" cy="350" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="365" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="380" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="395" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="410" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="425" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="440" r="3" fill="#2b8a3e"/>
+  <circle cx="220" cy="455" r="3" fill="#2b8a3e"/>
+  <!-- Blue data -->
+  <circle cx="220" cy="480" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="495" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="510" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="525" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="540" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="555" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="570" r="3" fill="#1864ab"/>
+  <circle cx="220" cy="585" r="3" fill="#1864ab"/>
+  <!-- Power -->
+  <circle cx="220" cy="620" r="3" fill="#e8590c"/>
+  <circle cx="220" cy="640" r="3" fill="#495057"/>
+
+  <!-- MCU Pin labels -->
+  <text x="210" y="133" text-anchor="end" class="pin-label" fill="#7048e8">PCLK</text>
+  <text x="210" y="153" text-anchor="end" class="pin-label" fill="#7048e8">HSYNC</text>
+  <text x="210" y="173" text-anchor="end" class="pin-label" fill="#7048e8">VSYNC</text>
+  <text x="210" y="193" text-anchor="end" class="pin-label" fill="#7048e8">DE</text>
+  <text x="210" y="223" text-anchor="end" class="pin-label" fill="#c92a2a">R7</text>
+  <text x="210" y="238" text-anchor="end" class="pin-label" fill="#c92a2a">R6</text>
+  <text x="210" y="253" text-anchor="end" class="pin-label" fill="#c92a2a">R5</text>
+  <text x="210" y="268" text-anchor="end" class="pin-label" fill="#c92a2a">R4</text>
+  <text x="210" y="283" text-anchor="end" class="pin-label" fill="#c92a2a">R3</text>
+  <text x="210" y="298" text-anchor="end" class="pin-label" fill="#c92a2a">R2</text>
+  <text x="210" y="313" text-anchor="end" class="pin-label" fill="#c92a2a">R1</text>
+  <text x="210" y="328" text-anchor="end" class="pin-label" fill="#c92a2a">R0</text>
+  <text x="210" y="353" text-anchor="end" class="pin-label" fill="#2b8a3e">G7</text>
+  <text x="210" y="368" text-anchor="end" class="pin-label" fill="#2b8a3e">G6</text>
+  <text x="210" y="383" text-anchor="end" class="pin-label" fill="#2b8a3e">G5</text>
+  <text x="210" y="398" text-anchor="end" class="pin-label" fill="#2b8a3e">G4</text>
+  <text x="210" y="413" text-anchor="end" class="pin-label" fill="#2b8a3e">G3</text>
+  <text x="210" y="428" text-anchor="end" class="pin-label" fill="#2b8a3e">G2</text>
+  <text x="210" y="443" text-anchor="end" class="pin-label" fill="#2b8a3e">G1</text>
+  <text x="210" y="458" text-anchor="end" class="pin-label" fill="#2b8a3e">G0</text>
+  <text x="210" y="483" text-anchor="end" class="pin-label" fill="#1864ab">B7</text>
+  <text x="210" y="498" text-anchor="end" class="pin-label" fill="#1864ab">B6</text>
+  <text x="210" y="513" text-anchor="end" class="pin-label" fill="#1864ab">B5</text>
+  <text x="210" y="528" text-anchor="end" class="pin-label" fill="#1864ab">B4</text>
+  <text x="210" y="543" text-anchor="end" class="pin-label" fill="#1864ab">B3</text>
+  <text x="210" y="558" text-anchor="end" class="pin-label" fill="#1864ab">B2</text>
+  <text x="210" y="573" text-anchor="end" class="pin-label" fill="#1864ab">B1</text>
+  <text x="210" y="588" text-anchor="end" class="pin-label" fill="#1864ab">B0</text>
+  <text x="210" y="623" text-anchor="end" class="pin-label" fill="#e8590c">VDD_IO</text>
+  <text x="210" y="643" text-anchor="end" class="pin-label">GND</text>
+
+  <!-- ==================== Series Resistors Block ==================== -->
+  <rect x="380" y="60" width="120" height="640" fill="#fff9db" stroke="#e8590c" stroke-width="1.5" rx="4"/>
+  <text x="440" y="82" text-anchor="middle" class="box-label" font-size="11">串联电阻</text>
+  <text x="440" y="97" text-anchor="middle" class="value" font-size="10">22~33Ω 每个</text>
+
+  <!-- Resistor symbols for each signal -->
+  <!-- Control: PCLK, HSYNC, VSYNC, DE -->
+  <rect x="400" y="123" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="143" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="163" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="183" width="80" height="14" class="resistor" rx="2"/>
+  <!-- Red -->
+  <rect x="400" y="213" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="228" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="243" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="258" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="273" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="288" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="303" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="318" width="80" height="14" class="resistor" rx="2"/>
+  <!-- Green -->
+  <rect x="400" y="343" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="358" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="373" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="388" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="403" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="418" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="433" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="448" width="80" height="14" class="resistor" rx="2"/>
+  <!-- Blue -->
+  <rect x="400" y="473" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="488" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="503" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="518" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="533" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="548" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="563" width="80" height="14" class="resistor" rx="2"/>
+  <rect x="400" y="578" width="80" height="14" class="resistor" rx="2"/>
+
+  <!-- ==================== LCD Panel Block ==================== -->
+  <rect x="680" y="60" width="220" height="640" class="ic-body" rx="6"/>
+  <text x="790" y="85" text-anchor="middle" class="box-label">TFT-LCD 面板</text>
+  <text x="790" y="102" text-anchor="middle" class="subtitle">(RGB888 输入)</text>
+
+  <!-- LCD Pin dots (left side) -->
+  <circle cx="680" cy="130" r="3" fill="#495057"/>
+  <circle cx="680" cy="150" r="3" fill="#495057"/>
+  <circle cx="680" cy="170" r="3" fill="#495057"/>
+  <circle cx="680" cy="190" r="3" fill="#495057"/>
+  <circle cx="680" cy="220" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="235" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="250" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="265" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="280" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="295" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="310" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="325" r="3" fill="#c92a2a"/>
+  <circle cx="680" cy="350" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="365" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="380" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="395" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="410" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="425" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="440" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="455" r="3" fill="#2b8a3e"/>
+  <circle cx="680" cy="480" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="495" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="510" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="525" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="540" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="555" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="570" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="585" r="3" fill="#1864ab"/>
+  <circle cx="680" cy="620" r="3" fill="#e8590c"/>
+  <circle cx="680" cy="640" r="3" fill="#495057"/>
+
+  <!-- LCD Pin labels -->
+  <text x="690" y="133" class="pin-label" fill="#7048e8">PCLK</text>
+  <text x="690" y="153" class="pin-label" fill="#7048e8">HSYNC</text>
+  <text x="690" y="173" class="pin-label" fill="#7048e8">VSYNC</text>
+  <text x="690" y="193" class="pin-label" fill="#7048e8">DE</text>
+  <text x="690" y="223" class="pin-label" fill="#c92a2a">R7</text>
+  <text x="690" y="238" class="pin-label" fill="#c92a2a">R6</text>
+  <text x="690" y="253" class="pin-label" fill="#c92a2a">R5</text>
+  <text x="690" y="268" class="pin-label" fill="#c92a2a">R4</text>
+  <text x="690" y="283" class="pin-label" fill="#c92a2a">R3</text>
+  <text x="690" y="298" class="pin-label" fill="#c92a2a">R2</text>
+  <text x="690" y="313" class="pin-label" fill="#c92a2a">R1</text>
+  <text x="690" y="328" class="pin-label" fill="#c92a2a">R0</text>
+  <text x="690" y="353" class="pin-label" fill="#2b8a3e">G7</text>
+  <text x="690" y="368" class="pin-label" fill="#2b8a3e">G6</text>
+  <text x="690" y="383" class="pin-label" fill="#2b8a3e">G5</text>
+  <text x="690" y="398" class="pin-label" fill="#2b8a3e">G4</text>
+  <text x="690" y="413" class="pin-label" fill="#2b8a3e">G3</text>
+  <text x="690" y="428" class="pin-label" fill="#2b8a3e">G2</text>
+  <text x="690" y="443" class="pin-label" fill="#2b8a3e">G1</text>
+  <text x="690" y="458" class="pin-label" fill="#2b8a3e">G0</text>
+  <text x="690" y="483" class="pin-label" fill="#1864ab">B7</text>
+  <text x="690" y="498" class="pin-label" fill="#1864ab">B6</text>
+  <text x="690" y="513" class="pin-label" fill="#1864ab">B5</text>
+  <text x="690" y="528" class="pin-label" fill="#1864ab">B4</text>
+  <text x="690" y="543" class="pin-label" fill="#1864ab">B3</text>
+  <text x="690" y="558" class="pin-label" fill="#1864ab">B2</text>
+  <text x="690" y="573" class="pin-label" fill="#1864ab">B1</text>
+  <text x="690" y="588" class="pin-label" fill="#1864ab">B0</text>
+  <text x="690" y="623" class="pin-label" fill="#e8590c">VCC_LCD</text>
+  <text x="690" y="643" class="pin-label">GND</text>
+
+  <!-- ==================== Wires: MCU → Resistors ==================== -->
+  <!-- Control wires -->
+  <line x1="223" y1="130" x2="400" y2="130" class="wire-ctrl"/>
+  <line x1="223" y1="150" x2="400" y2="150" class="wire-ctrl"/>
+  <line x1="223" y1="170" x2="400" y2="170" class="wire-ctrl"/>
+  <line x1="223" y1="190" x2="400" y2="190" class="wire-ctrl"/>
+  <!-- Red wires -->
+  <line x1="223" y1="220" x2="400" y2="220" class="wire-r"/>
+  <line x1="223" y1="235" x2="400" y2="235" class="wire-r"/>
+  <line x1="223" y1="250" x2="400" y2="250" class="wire-r"/>
+  <line x1="223" y1="265" x2="400" y2="265" class="wire-r"/>
+  <line x1="223" y1="280" x2="400" y2="280" class="wire-r"/>
+  <line x1="223" y1="295" x2="400" y2="295" class="wire-r"/>
+  <line x1="223" y1="310" x2="400" y2="310" class="wire-r"/>
+  <line x1="223" y1="325" x2="400" y2="325" class="wire-r"/>
+  <!-- Green wires -->
+  <line x1="223" y1="350" x2="400" y2="350" class="wire-g"/>
+  <line x1="223" y1="365" x2="400" y2="365" class="wire-g"/>
+  <line x1="223" y1="380" x2="400" y2="380" class="wire-g"/>
+  <line x1="223" y1="395" x2="400" y2="395" class="wire-g"/>
+  <line x1="223" y1="410" x2="400" y2="410" class="wire-g"/>
+  <line x1="223" y1="425" x2="400" y2="425" class="wire-g"/>
+  <line x1="223" y1="440" x2="400" y2="440" class="wire-g"/>
+  <line x1="223" y1="455" x2="400" y2="455" class="wire-g"/>
+  <!-- Blue wires -->
+  <line x1="223" y1="480" x2="400" y2="480" class="wire-b"/>
+  <line x1="223" y1="495" x2="400" y2="495" class="wire-b"/>
+  <line x1="223" y1="510" x2="400" y2="510" class="wire-b"/>
+  <line x1="223" y1="525" x2="400" y2="525" class="wire-b"/>
+  <line x1="223" y1="540" x2="400" y2="540" class="wire-b"/>
+  <line x1="223" y1="555" x2="400" y2="555" class="wire-b"/>
+  <line x1="223" y1="570" x2="400" y2="570" class="wire-b"/>
+  <line x1="223" y1="585" x2="400" y2="585" class="wire-b"/>
+  <!-- Power wires -->
+  <line x1="223" y1="620" x2="400" y2="620" class="wire-pwr"/>
+  <line x1="223" y1="640" x2="400" y2="640" class="wire"/>
+
+  <!-- ==================== Wires: Resistors → LCD ==================== -->
+  <!-- Control wires -->
+  <line x1="480" y1="130" x2="677" y2="130" class="wire-ctrl"/>
+  <line x1="480" y1="150" x2="677" y2="150" class="wire-ctrl"/>
+  <line x1="480" y1="170" x2="677" y2="170" class="wire-ctrl"/>
+  <line x1="480" y1="190" x2="677" y2="190" class="wire-ctrl"/>
+  <!-- Red wires -->
+  <line x1="480" y1="220" x2="677" y2="220" class="wire-r"/>
+  <line x1="480" y1="235" x2="677" y2="235" class="wire-r"/>
+  <line x1="480" y1="250" x2="677" y2="250" class="wire-r"/>
+  <line x1="480" y1="265" x2="677" y2="265" class="wire-r"/>
+  <line x1="480" y1="280" x2="677" y2="280" class="wire-r"/>
+  <line x1="480" y1="295" x2="677" y2="295" class="wire-r"/>
+  <line x1="480" y1="310" x2="677" y2="310" class="wire-r"/>
+  <line x1="480" y1="325" x2="677" y2="325" class="wire-r"/>
+  <!-- Green wires -->
+  <line x1="480" y1="350" x2="677" y2="350" class="wire-g"/>
+  <line x1="480" y1="365" x2="677" y2="365" class="wire-g"/>
+  <line x1="480" y1="380" x2="677" y2="380" class="wire-g"/>
+  <line x1="480" y1="395" x2="677" y2="395" class="wire-g"/>
+  <line x1="480" y1="410" x2="677" y2="410" class="wire-g"/>
+  <line x1="480" y1="425" x2="677" y2="425" class="wire-g"/>
+  <line x1="480" y1="440" x2="677" y2="440" class="wire-g"/>
+  <line x1="480" y1="455" x2="677" y2="455" class="wire-g"/>
+  <!-- Blue wires -->
+  <line x1="480" y1="480" x2="677" y2="480" class="wire-b"/>
+  <line x1="480" y1="495" x2="677" y2="495" class="wire-b"/>
+  <line x1="480" y1="510" x2="677" y2="510" class="wire-b"/>
+  <line x1="480" y1="525" x2="677" y2="525" class="wire-b"/>
+  <line x1="480" y1="540" x2="677" y2="540" class="wire-b"/>
+  <line x1="480" y1="555" x2="677" y2="555" class="wire-b"/>
+  <line x1="480" y1="570" x2="677" y2="570" class="wire-b"/>
+  <line x1="480" y1="585" x2="677" y2="585" class="wire-b"/>
+  <!-- Power wires -->
+  <line x1="480" y1="620" x2="677" y2="620" class="wire-pwr"/>
+  <line x1="480" y1="640" x2="677" y2="640" class="wire"/>
+
+  <!-- ==================== LCD Display Area ==================== -->
+  <rect x="710" y="670" width="160" height="80" fill="#e7f5ff" stroke="#1864ab" stroke-width="1.5" rx="4"/>
+  <text x="790" y="705" text-anchor="middle" font-size="13" fill="#1864ab" font-weight="600">Active Area</text>
+  <text x="790" y="725" text-anchor="middle" font-size="11" fill="#6c757d">800 × 480 pixels</text>
+  <text x="790" y="742" text-anchor="middle" font-size="10" fill="#6c757d">(示例分辨率)</text>
+
+  <!-- ==================== Decoupling Capacitors ==================== -->
+  <text x="120" y="770" text-anchor="middle" class="box-label" font-size="11">去耦电容设计</text>
+
+  <!-- MCU side -->
+  <rect x="30" y="780" width="50" height="18" fill="#fff3bf" stroke="#e8590c" stroke-width="1" rx="2"/>
+  <text x="55" y="793" text-anchor="middle" class="value">100nF</text>
+  <text x="55" y="808" text-anchor="middle" class="note">VDD_IO → GND</text>
+
+  <rect x="90" y="780" width="50" height="18" fill="#fff3bf" stroke="#e8590c" stroke-width="1" rx="2"/>
+  <text x="115" y="793" text-anchor="middle" class="value">10μF</text>
+  <text x="115" y="808" text-anchor="middle" class="note">VDD_IO → GND</text>
+
+  <!-- LCD side -->
+  <rect x="700" y="780" width="50" height="18" fill="#fff3bf" stroke="#e8590c" stroke-width="1" rx="2"/>
+  <text x="725" y="793" text-anchor="middle" class="value">100nF</text>
+  <text x="725" y="808" text-anchor="middle" class="note">VCC_LCD → GND</text>
+
+  <rect x="760" y="780" width="50" height="18" fill="#fff3bf" stroke="#e8590c" stroke-width="1" rx="2"/>
+  <text x="785" y="793" text-anchor="middle" class="value">10μF</text>
+  <text x="785" y="808" text-anchor="middle" class="note">VCC_LCD → GND</text>
+
+  <!-- ==================== Notes ==================== -->
+  <text x="920" y="770" class="box-label" font-size="11">设计要点</text>
+  <text x="920" y="788" class="note">1. 每根信号线串联</text>
+  <text x="920" y="802" class="note">   22~33Ω 电阻</text>
+
+  <!-- Legend -->
+  <line x1="20" y1="55" x2="50" y2="55" class="wire-ctrl"/>
+  <text x="55" y="58" font-size="9" fill="#7048e8">控制信号</text>
+  <line x1="130" y1="55" x2="160" y2="55" class="wire-r"/>
+  <text x="165" y="58" font-size="9" fill="#c92a2a">红色数据</text>
+  <line x1="240" y1="55" x2="270" y2="55" class="wire-g"/>
+  <text x="275" y="58" font-size="9" fill="#2b8a3e">绿色数据</text>
+  <line x1="350" y1="55" x2="380" y2="55" class="wire-b"/>
+  <text x="385" y="58" font-size="9" fill="#1864ab">蓝色数据</text>
+  <line x1="460" y1="55" x2="490" y2="55" class="wire-pwr"/>
+  <text x="495" y="58" font-size="9" fill="#e8590c">电源</text>
+</svg>

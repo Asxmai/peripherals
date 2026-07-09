@@ -883,12 +883,13 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <p class="card-desc">PDM数字麦克风专用接口，1位高速数据流，片内转换为PCM数据。支持立体声双通道。</p>
         </div>
 
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P23_LVDS/lvds-technical-guide.html" class="peripheral-card">
           <div class="card-icon">🖥️</div>
           <h3 class="card-title">LVDS</h3>
           <p class="card-subtitle">差分信号显示接口 · 1994</p>
           <p class="card-desc">低电压差分信号，高速低EMI。用于大尺寸TFT LCD屏驱动、高速数据采集板间通信。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
 
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">📐</div>
@@ -1075,12 +1076,13 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <p class="card-subtitle">实时时钟 · 1990s</p>
           <p class="card-desc">独立域低功耗时钟，LSE(32.768kHz)驱动。日历、闹钟、周期唤醒。VBAT备份。</p>
         </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a class="peripheral-card" href="peripherals/P55_IWDG/stm32-iwdg-guide.html">
           <div class="card-icon">🐕</div>
           <h3 class="card-title">IWDG</h3>
           <p class="card-subtitle">独立看门狗 · 1990s</p>
           <p class="card-desc">独立硬件看门狗，LSI时钟驱动。超时未喂狗触发系统复位。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">⚙️</div>
           <h3 class="card-title">Advanced TIM</h3>
@@ -1280,12 +1282,13 @@ html.dark .theme-toggle .icon-moon { display: none; }
         <span class="category-count">7 项</span>
       </div>
       <div class="peripheral-grid">
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P83_FLASH/flash-controller-guide.html" class="peripheral-card">
           <div class="card-icon">💾</div>
           <h3 class="card-title">FLASH</h3>
           <p class="card-subtitle">Flash控制器 · 1990s</p>
           <p class="card-desc">管理内部Flash读写、擦除、加密、安全区域(ROP)。支持双Bank并行读取。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🗄️</div>
           <h3 class="card-title">FMC/FSMC</h3>
@@ -1562,12 +1565,13 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <p class="card-subtitle">段式LCD驱动 · 2000s</p>
           <p class="card-desc">直接驱动段式LCD显示屏，支持多COM/SEG。低功耗，用于仪表、家电显示。</p>
         </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a href="./peripherals/P123_DPI/dpi-embedded-guide.html" class="peripheral-card">
           <div class="card-icon">🖥️</div>
           <h3 class="card-title">DPI</h3>
           <p class="card-subtitle">并行RGB显示接口 · 2010s</p>
           <p class="card-desc">Display Parallel Interface，并行RGB数据+同步信号。用于中小尺寸TFT屏。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">🔌</div>
           <h3 class="card-title">Intel 8080</h3>
@@ -1716,36 +1720,39 @@ html.dark .theme-toggle .icon-moon { display: none; }
           <p class="card-desc">集成WiFi 2.4GHz(802.11 b/g/n)。STA/AP模式。部分集成TCP/IP卸载。</p>
           <span class="card-arrow">→</span>
         </a>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a class="peripheral-card" href="peripherals/P143_Zigbee/zigbee-embedded-guide.html">
           <div class="card-icon">🕸️</div>
           <h3 class="card-title">Zigbee</h3>
           <p class="card-subtitle">Zigbee/Thread · 2003</p>
           <p class="card-desc">IEEE 802.15.4射频，Zigbee/Thread网状网络。低功耗、自组网、多跳。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">📡</div>
           <h3 class="card-title">LoRa</h3>
           <p class="card-subtitle">LoRa/Sub-GHz · 2012</p>
           <p class="card-desc">远距离低功耗无线通信，Sub-GHz频段。扩频调制，公里级传输距离。</p>
         </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a class="peripheral-card" href="peripherals/P145_NFC/nfc-embedded-guide.html">
           <div class="card-icon">📱</div>
           <h3 class="card-title">NFC</h3>
           <p class="card-subtitle">近场通信 · 2004</p>
           <p class="card-desc">13.56MHz短距离通信，支持读卡器/卡模拟/P2P模式。用于支付、门禁、标签读取。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">📶</div>
           <h3 class="card-title">802.15.4</h3>
           <p class="card-subtitle">IEEE 802.15.4射频 · 2003</p>
           <p class="card-desc">低速无线个域网标准物理层/MAC层。Zigbee/Thread/6LoWPAN基础。</p>
         </div>
-        <div class="peripheral-card" style="opacity:0.5; cursor:default;">
+        <a class="peripheral-card" href="peripherals/P147_GNSS/gnss-embedded-guide.html">
           <div class="card-icon">🌍</div>
           <h3 class="card-title">GNSS</h3>
           <p class="card-subtitle">全球导航卫星系统 · 2000s</p>
           <p class="card-desc">集成GPS/北斗/GLONASS/Galileo接收基带。定位、授时、测速。</p>
-        </div>
+          <span class="card-arrow">→</span>
+        </a>
         <div class="peripheral-card" style="opacity:0.5; cursor:default;">
           <div class="card-icon">📱</div>
           <h3 class="card-title">LTE-M/NB-IoT</h3>

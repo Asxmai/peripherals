@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 420" font-family="'JetBrains Mono', 'Noto Sans CJK SC', monospace" font-size="12">
+  <defs>
+    <style>
+      .signal-label { font-size: 13px; font-weight: 600; fill: #1a1a2e; }
+      .dim-label { font-size: 11px; fill: #0066cc; font-weight: 600; }
+      .dim-line { stroke: #0066cc; stroke-width: 1; stroke-dasharray: 4,3; }
+      .dim-arrow { stroke: #0066cc; stroke-width: 1.2; fill: none; marker-start: url(#arrowL2); marker-end: url(#arrowR2); }
+      .wave-vsync { stroke: #d6336c; stroke-width: 2.2; fill: none; }
+      .wave-hsync { stroke: #2b8a3e; stroke-width: 2; fill: none; }
+      .wave-de-v { stroke: #1864ab; stroke-width: 2.2; fill: none; }
+      .title { font-size: 16px; font-weight: 700; fill: #1a1a2e; }
+      .subtitle { font-size: 11px; fill: #6c757d; }
+      .note { font-size: 10px; fill: #6c757d; }
+    </style>
+    <marker id="arrowR2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#0066cc" stroke-width="1"/>
+    </marker>
+    <marker id="arrowL2" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6" fill="none" stroke="#0066cc" stroke-width="1"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="530" y="25" text-anchor="middle" class="title">DPI 垂直时序波形图 (Vertical Timing)</text>
+  <text x="530" y="42" text-anchor="middle" class="subtitle">以 800×480 分辨率为例 | VSYNC=1, VBP=20, Active=480, VFP=13 (单位: 行/HSYNC周期)</text>
+
+  <!-- Background regions -->
+  <rect x="130" y="55" width="30" height="340" fill="#d6336c10" rx="2"/>
+  <rect x="160" y="55" width="60" height="340" fill="#e8590c08" rx="2"/>
+  <rect x="220" y="55" width="576" height="340" fill="#1864ab08" rx="2"/>
+  <rect x="796" y="55" width="60" height="340" fill="#868e9608" rx="2"/>
+
+  <!-- Region labels -->
+  <text x="145" y="70" text-anchor="middle" class="dim-label" font-size="10">VSYNC</text>
+  <text x="190" y="70" text-anchor="middle" class="dim-label" font-size="10">VBP</text>
+  <text x="508" y="70" text-anchor="middle" class="dim-label" font-size="10">Active Display (480 lines)</text>
+  <text x="826" y="70" text-anchor="middle" class="dim-label" font-size="10">VFP</text>
+
+  <!-- ========== Row 1: VSYNC ========== -->
+  <text x="15" y="115" class="signal-label" fill="#d6336c">VSYNC</text>
+  <!-- VSYNC: active low, long pulse spanning VSYNC width -->
+  <polyline class="wave-vsync" points="
+    130,95 130,125 160,125 160,95 856,95
+  "/>
+  <text x="145" y="118" text-anchor="middle" font-size="9" fill="#d6336c" font-weight="600">Active</text>
+
+  <!-- ========== Row 2: HSYNC (repeated square wave pulses) ========== -->
+  <text x="15" y="175" class="signal-label" fill="#2b8a3e">HSYNC</text>
+  <!-- HSYNC as repeated square wave pulses across the frame -->
+  <!-- Each HSYNC cycle: low for ~6px, high for ~18px = 24px per cycle -->
+  <!-- High level y=155, Low level y=185 -->
+  <polyline class="wave-hsync" points="
+    130,155 130,185 136,185 136,155 154,155
+    154,185 160,185 160,155 178,155
+    178,185 184,185 184,155 202,155
+    202,185 208,185 208,155 226,155
+    226,185 232,185 232,155 250,155
+    250,185 256,185 256,155 274,155
+    274,185 280,185 280,155 298,155
+    298,185 304,185 304,155 322,155
+    322,185 328,185 328,155 346,155
+    346,185 352,185 352,155 370,155
+    370,185 376,185 376,155 394,155
+    394,185 400,185 400,155 418,155
+    418,185 424,185 424,155 442,155
+    442,185 448,185 448,155 466,155
+    466,185 472,185 472,155 490,155
+    490,185 496,185 496,155 514,155
+    514,185 520,185 520,155 538,155
+    538,185 544,185 544,155 562,155
+    562,185 568,185 568,155 586,155
+    586,185 592,185 592,155 610,155
+    610,185 616,185 616,155 634,155
+    634,185 640,185 640,155 658,155
+    658,185 664,185 664,155 682,155
+    682,185 688,185 688,155 706,155
+    706,185 712,185 712,155 730,155
+    730,185 736,185 736,155 754,155
+    754,185 760,185 760,155 778,155
+    778,185 784,185 784,155 802,155
+    802,185 808,185 808,155 826,155
+    826,185 832,185 832,155 850,155
+    850,185 856,185 856,155
+  "/>
+  <text x="508" y="200" text-anchor="middle" class="note">每个方波脉冲 = 1 个 HSYNC 周期 (一行), 低电平 = HSYNC 脉冲</text>
+
+  <!-- ========== Row 3: DE (vertical view) ========== -->
+  <text x="15" y="265" class="signal-label" fill="#1864ab">DE (帧级)</text>
+  <!-- DE: low during VSYNC+VBP+VFP, high during active lines -->
+  <polyline class="wave-de-v" points="
+    130,240 220,240 220,210 796,210 796,240 856,240
+  "/>
+  <text x="508" y="230" text-anchor="middle" font-size="10" fill="#1864ab" font-weight="600">DE High = 有效行 (480 行)</text>
+
+  <!-- ========== Row 4: Frame representation ========== -->
+  <text x="15" y="315" class="signal-label">帧数据</text>
+  <!-- Show frame as a block diagram -->
+  <rect x="130" y="295" width="30" height="40" fill="#d6336c20" stroke="#d6336c" stroke-width="1" rx="2"/>
+  <text x="145" y="320" text-anchor="middle" font-size="9" fill="#d6336c">VS</text>
+  <rect x="160" y="295" width="60" height="40" fill="#e8590c15" stroke="#e8590c" stroke-width="1" rx="2"/>
+  <text x="190" y="320" text-anchor="middle" font-size="9" fill="#e8590c">VBP</text>
+  <rect x="220" y="295" width="576" height="40" fill="#1864ab15" stroke="#1864ab" stroke-width="1" rx="2"/>
+  <text x="508" y="320" text-anchor="middle" font-size="10" fill="#1864ab" font-weight="600">有效帧数据 (480 × 800 pixels)</text>
+  <rect x="796" y="295" width="60" height="40" fill="#868e9615" stroke="#868e96" stroke-width="1" rx="2"/>
+  <text x="826" y="320" text-anchor="middle" font-size="9" fill="#868e96">VFP</text>
+
+  <!-- ========== Dimension Lines ========== -->
+  <!-- VSYNC -->
+  <line x1="130" y1="355" x2="130" y2="370" class="dim-line"/>
+  <line x1="160" y1="355" x2="160" y2="370" class="dim-line"/>
+  <line x1="130" y1="365" x2="160" y2="365" class="dim-arrow"/>
+  <text x="145" y="382" text-anchor="middle" class="dim-label" font-size="10">VSYNC_W = 1 line</text>
+
+  <!-- VBP -->
+  <line x1="160" y1="355" x2="160" y2="370" class="dim-line"/>
+  <line x1="220" y1="355" x2="220" y2="370" class="dim-line"/>
+  <line x1="160" y1="365" x2="220" y2="365" class="dim-arrow"/>
+  <text x="190" y="382" text-anchor="middle" class="dim-label" font-size="10">VBP = 20 lines</text>
+
+  <!-- Active -->
+  <line x1="220" y1="355" x2="220" y2="370" class="dim-line"/>
+  <line x1="796" y1="355" x2="796" y2="370" class="dim-line"/>
+  <line x1="220" y1="365" x2="796" y2="365" class="dim-arrow"/>
+  <text x="508" y="382" text-anchor="middle" class="dim-label" font-size="10">VACT = 480 lines</text>
+
+  <!-- VFP -->
+  <line x1="796" y1="355" x2="796" y2="370" class="dim-line"/>
+  <line x1="856" y1="355" x2="856" y2="370" class="dim-line"/>
+  <line x1="796" y1="365" x2="856" y2="365" class="dim-arrow"/>
+  <text x="826" y="382" text-anchor="middle" class="dim-label" font-size="10">VFP = 13 lines</text>
+
+  <!-- Note -->
+  <text x="530" y="410" text-anchor="middle" class="note">注意: 垂直时序中, 每个"行"包含完整的水平时序周期 (HSYNC + HBP + Active + HFP)</text>
+</svg>
